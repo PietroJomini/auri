@@ -1,0 +1,13 @@
+- [x] bitboards
+- [ ] gamerules
+  - [x] position
+    - [x] from tps
+    - [x] to tps
+    - [ ] moves
+    - [ ] win / tie conditions
+  - [ ] game
+- [ ] TEI
+- [ ] agents
+- [ ] solvers
+  - [ ] 3x3
+  - [ ] 5x5
