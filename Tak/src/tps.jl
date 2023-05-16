@@ -1,44 +1,60 @@
-export tps2position, position2tps
+module TPS
 
-function tps2position(tps::String)
-    size = count('/', tps) + 1
+using StaticArrays, ..Tak
+
+export tps2position, position2tps, Syntax
+
+struct Syntax
+    white::Char
+    black::Char
+    wall::Char
+    capstone::Char
+    row_separator::Char
+    square_separator::Char
+    empty::Char
+end
+
+const STD = Syntax('1', '2', 'S',  'C', '/', ',', 'x')
+
+function tps2position(tps::String, syntax::Syntax = STD)
+    size = count(syntax.row_separator, tps) + 1
     index = 1
     jumping = false
-    caps = empty(size)
-    walls = empty(size)
-    stacks = [empty() for _ in 1:64]
+    caps = Tak.empty(size)
+    walls = Tak.empty(size)
+    stacks = [Tak.empty() for _ in 1:64]
     heights = [UInt8(0) for _ in 1:64]
-    ceiling = [0 for _ in 1:64]
+    ceiling = [-1 for _ in 1:64]
 
     for c ∈ tps
-        if c == 'x'
+        if c == syntax.empty
             jumping = true
-        elseif c ∈ (',', '/')
+        elseif c ∈ (syntax.row_separator, syntax.square_separator)
             index += 1
             jumping = false
-        elseif c == 'C'
+        elseif c == syntax.capstone
             caps = caps ∪ square(index, size)
-        elseif c == 'S'
+        elseif c == syntax.wall
             walls = walls ∪ square(index, size)
         elseif jumping && isdigit(c)
             index += parse(Int, c) - 1
-        elseif isdigit(c)
-            value = parse(Int, c)
+        elseif c ∈ (syntax.white, syntax.black)
             heights[index] += 1
-            stacks[index] = (stacks[index] << 1) + (value - 1)
+            value = (c == syntax.white) ? 0 : 1
+            stacks[index] = (stacks[index] << 1) + value
             ceiling[index] = value
         end
     end
 
-    white = fromBitVector(ceiling .== 1, size)
-    black = fromBitVector(ceiling .!= 2, size)
+    white = fromBitVector(ceiling .== 0, size)
+    black = fromBitVector(ceiling .== 1, size)
     stacks = SVector{64}(stacks)
     heights = SVector{64}(heights)
 
     Position(size, white, black, caps, walls, heights, stacks)
 end
 
-function position2tps(position::Position)
+function position2tps(position::Position, syntax::Syntax=STD)
     rows = [[] for _ in 1:position.size]
     jumps = 0
 
@@ -51,24 +67,26 @@ function position2tps(position::Position)
                 jumps += 1
             else
                 if jumps > 0
-                    push!(rows[row_index], "x" * (jumps == 1 ? "" : string(jumps)))
+                    push!(rows[row_index], syntax.empty * (jumps == 1 ? "" : string(jumps)))
                     jumps = 0
                 end
 
                 s = square(index, position.size)
                 stack = bitstring(position.stacks[index].raw)[end-height+1:end]
 
-                push!(cell, replace(stack, "0" => "1", "1" => "2"))
-                push!(cell, s ∈ position.caps ? "C" : s ∈ position.walls ? "S" : "")
+                push!(cell, replace(stack, "0" => syntax.white, "1" => syntax.black))
+                push!(cell, s ∈ position.caps ? syntax.capstone : s ∈ position.walls ? syntax.wall : "")
                 push!(rows[row_index], join(cell))
             end
         end
 
         if jumps > 0
-            push!(rows[row_index], "x" * (jumps == 1 ? "" : string(jumps)))
+            push!(rows[row_index], syntax.empty * (jumps == 1 ? "" : string(jumps)))
             jumps = 0
         end
     end
 
-    join(join.(rows, ","), "/")
+    join(join.(rows, syntax.square_separator), syntax.row_separator)
+end
+
 end
