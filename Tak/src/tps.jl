@@ -16,13 +16,14 @@ end
 
 const STD = Syntax('1', '2', 'S',  'C', '/', ',', 'x')
 
+# TODO: technically, this results ina  180° rotated boards. do i care?
 function parse_tps(tps::String, syntax::Syntax = STD)
-    size = count(syntax.row_separator, tps) + 1
+    size = BitboardSize(count(syntax.row_separator, tps) + 1)
     index = 1
     jumping = false
     caps = Tak.empty(size)
     walls = Tak.empty(size)
-    stacks = [Tak.empty() for _ in 1:64]
+    stacks = [Tak.empty(BBS_8) for _ in 1:64]
     heights = [UInt8(0) for _ in 1:64]
     ceiling = [-1 for _ in 1:64]
 
@@ -33,9 +34,9 @@ function parse_tps(tps::String, syntax::Syntax = STD)
             index += 1
             jumping = false
         elseif c == syntax.capstone
-            caps = caps ∪ square(index, size)
+            caps = caps ∪ square(size, index)
         elseif c == syntax.wall
-            walls = walls ∪ square(index, size)
+            walls = walls ∪ square(size, index)
         elseif jumping && isdigit(c)
             index += parse(Int, c) - 1
         elseif c ∈ (syntax.white, syntax.black)
@@ -46,8 +47,8 @@ function parse_tps(tps::String, syntax::Syntax = STD)
         end
     end
 
-    white = fromBitVector(ceiling .== 0, size)
-    black = fromBitVector(ceiling .== 1, size)
+    white = from_bit_vector(size, ceiling .== 0)
+    black = from_bit_vector(size, ceiling .== 1)
     stacks = SVector{64}(stacks)
     heights = SVector{64}(heights)
 
@@ -71,7 +72,7 @@ function tps(position::Position, syntax::Syntax=STD)
                     jumps = 0
                 end
 
-                s = square(index, position.size)
+                s = square(position.size, index)
                 stack = bitstring(position.stacks[index].raw)[end-height+1:end]
 
                 push!(cell, replace(stack, "0" => syntax.white, "1" => syntax.black))
