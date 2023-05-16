@@ -1,7 +1,0 @@
-name = "Tak"
-uuid = "83ffbee2-7345-453b-876e-5fe3acf34a28"
-authors = ["Pietro Jomini <pietro.jomini@protonmail.ch>"]
-version = "0.1.0"
-
-[deps]
-StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
