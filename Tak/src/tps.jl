@@ -2,7 +2,7 @@ module TPS
 
 using StaticArrays, ..Tak
 
-export tps2position, position2tps, Syntax
+export parse_tps, tps, Syntax
 
 struct Syntax
     white::Char
@@ -16,7 +16,7 @@ end
 
 const STD = Syntax('1', '2', 'S',  'C', '/', ',', 'x')
 
-function tps2position(tps::String, syntax::Syntax = STD)
+function parse_tps(tps::String, syntax::Syntax = STD)
     size = count(syntax.row_separator, tps) + 1
     index = 1
     jumping = false
@@ -54,7 +54,7 @@ function tps2position(tps::String, syntax::Syntax = STD)
     Position(size, white, black, caps, walls, heights, stacks)
 end
 
-function position2tps(position::Position, syntax::Syntax=STD)
+function tps(position::Position, syntax::Syntax=STD)
     rows = [[] for _ in 1:position.size]
     jumps = 0
 
