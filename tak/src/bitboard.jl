@@ -2,7 +2,8 @@ import Base.==, Base.-, Base.+, Base.<<, Base.>>, Base.*, Base.~
 import Base.in, Base.union, Base.intersect, Base.isless, Base.issubset
 
 export BitboardSize, BBS_3, BBS_4, BBS_5, BBS_6, BBS_8
-export Square, Bitboard, from_bit_vector, universe, empty, square, row, column
+export Square, coordinates
+export Bitboard, from_bit_vector, universe, empty, square, row, column
 
 """
 Utility placeholder fot the size of a Bitboard.
@@ -20,6 +21,13 @@ Representation of a square
 """
 struct Square
     index::Int8
+end
+
+# coordinates(size::BitboardSize, sq::Square) = (row=sq.index ÷ size + 1, column=sq.index % size)
+function coordinates(size::BitboardSize, sq::Square)
+    row = (sq.index - 1) ÷ size + 1
+    column = sq.index % size
+    row, column != 0 ? column : size
 end
 
 """
@@ -56,10 +64,14 @@ Base.broadcastable(x::Bitboard) = Ref(Bitboard)
 Base.length(bb::Bitboard) = count_ones(bb.raw)
 
 function Base.iterate(bb::Bitboard, state=1)
-    if state > bb.size^2 return nothing end
+    if state > bb.size^2
+        return nothing
+    end
     for index in state:bb.size^2
-        s = square(bb.size, index)
-        if s ⊆ bb return (s, index + 1) end
+        s = Square(index)
+        if s ∈ bb
+            return (s, index + 1)
+        end
     end
 end
 
@@ -70,6 +82,8 @@ function Base.show(io::IO, bb::Bitboard)
             index = (r - 1) * bb.size + c
             print(io, (square(bb.size, index) ⊆ bb) ? "# " : "- ")
         end
-        if r < bb.size println(io) end
+        if r < bb.size
+            println(io)
+        end
     end
 end

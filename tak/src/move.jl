@@ -3,7 +3,8 @@ export Placement, Slide, Move, placements_mask, placements
 abstract type Move end
 
 struct Placement <: Move
-    position::Bitboard
+    size::BitboardSize
+    at::Square
 end
 
 struct Slide <: Move
@@ -13,7 +14,7 @@ struct Slide <: Move
     height::SVector{8,UInt8}
 end
 
-placements_mask(position::Position) = ~(position.white ∪ position.black)
-placements(position::Position) = map(Placement, placements_mask(position))
+placements_mask(pos::Position) = ~(pos.white ∪ pos.black)
+placements(pos::Position) = map(sq -> Placement(pos.size, sq), placements_mask(pos))
 
-Base.show(io::IO, placement::Placement) = print(io, "Placement(0x$(string(placement.position.raw, base=16, pad=16)))")
+Base.show(io::IO, pl::Placement) = print(io, "Placement($(Tak.PTN.square(pl.size, pl.at)))")
