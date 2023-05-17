@@ -1,8 +1,8 @@
-import Base.==, Base.-, Base.+, Base.<<, Base.>>, Base.*
-import Base.union, Base.intersect, Base.isless, Base.issubset
+import Base.==, Base.-, Base.+, Base.<<, Base.>>, Base.*, Base.~
+import Base.in, Base.union, Base.intersect, Base.isless, Base.issubset
 
 export BitboardSize, BBS_3, BBS_4, BBS_5, BBS_6, BBS_8
-export Bitboard, from_bit_vector, universe, empty, square, row, column
+export Square, Bitboard, from_bit_vector, universe, empty, square, row, column
 
 """
 Utility placeholder fot the size of a Bitboard.
@@ -16,34 +16,44 @@ const BBS_6 = BitboardSize(6)
 const BBS_8 = BitboardSize(8)
 
 """
+Representation of a square
+"""
+struct Square
+    index::Int8
+end
+
+"""
 Bitboard representation of a board.
 """
 struct Bitboard
-    raw::UInt64
     size::BitboardSize
+    raw::UInt64
 end
 
-Bitboard(raw::R, size::S) where {R<:Number,S<:Integer} = Bitboard(UInt64(raw), BitboardSize(size))
-from_bit_vector(size::BitboardSize, bits::BitVector) = Bitboard(evalpoly(UInt64(2), bits), size)
+Bitboard(size::S, raw::R) where {R<:Number,S<:Integer} = Bitboard(BitboardSize(size), UInt64(raw))
+Bitboard(size::BitboardSize, sq::Square) = square(BitboardSize(size), sq.index)
+from_bit_vector(size::BitboardSize, bits::BitVector) = Bitboard(size, evalpoly(UInt64(2), bits))
 
-union(b1::Bitboard, b2::Bitboard) = Bitboard(b1.raw | b2.raw, max(b1.size, b2.size))
-intersect(b1::Bitboard, b2::Bitboard) = Bitboard(b1.raw & b2.raw, max(b1.size, b2.size))
+in(sq::Square, bb::Bitboard) = Bitboard(bb.size, sq) ⊆ bb
+union(b1::Bitboard, b2::Bitboard) = Bitboard(max(b1.size, b2.size), b1.raw | b2.raw)
+intersect(b1::Bitboard, b2::Bitboard) = Bitboard(max(b1.size, b2.size), b1.raw & b2.raw)
 issubset(b1::Bitboard, b2::Bitboard) = b2 == (b1 ∪ b2)
-~(bb::Bitboard) = Bitboard(~bb.raw, bb.size) ∩ universe(bb.size)
+~(bb::Bitboard) = Bitboard(bb.size, ~bb.raw) ∩ universe(bb.size)
 +(b1::Bitboard, b2::Bitboard) = b1 ∪ b2
-+(bb::Bitboard, value::Integer) = Bitboard(bb.raw + value, bb.size)
++(bb::Bitboard, value::Integer) = Bitboard(bb.size, bb.raw + value)
 -(b1::Bitboard, b2::Bitboard) = b1 ∩ ~b2
-<<(bb::Bitboard, value::Integer) = Bitboard(bb.raw << value, bb.size)
->>(bb::Bitboard, value::Integer) = Bitboard(bb.raw >> value, bb.size)
+<<(bb::Bitboard, value::Integer) = Bitboard(bb.size, bb.raw << value)
+>>(bb::Bitboard, value::Integer) = Bitboard(bb.size, bb.raw >> value)
 
-empty(size::BitboardSize) = Bitboard(0, size)
-universe(size::BitboardSize) = Bitboard(UInt64(2)^size^2 - 1, size)
-square(size::BitboardSize, index::Integer) = Bitboard(1, size) << (index - 1)
-row(size::BitboardSize, index::Integer) = Bitboard(2^size - 1, size) << ((index - 1) * size)
+empty(size::BitboardSize) = Bitboard(size, 0)
+universe(size::BitboardSize) = Bitboard(size, UInt64(2)^size^2 - 1)
+square(size::BitboardSize, index::Integer) = Bitboard(size, 1) << (index - 1)
+row(size::BitboardSize, index::Integer) = Bitboard(size, 2^size - 1) << ((index - 1) * size)
 column(size::BitboardSize, index::Integer) = reduce(∪, square(size, r * size) >> (size - index) for r ∈ 1:size)
 
 #https://docs.julialang.org/en/v1/manual/interfaces/#man-interfaces-broadcasting
 Base.broadcastable(x::Bitboard) = Ref(Bitboard)
+Base.length(bb::Bitboard) = count_ones(bb.raw)
 
 function Base.iterate(bb::Bitboard, state=1)
     if state > bb.size^2 return nothing end
