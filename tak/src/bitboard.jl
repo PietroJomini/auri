@@ -2,11 +2,12 @@ import Base.==, Base.-, Base.+, Base.<<, Base.>>, Base.*, Base.~
 import Base.in, Base.union, Base.intersect, Base.isless, Base.issubset
 
 export BitboardSize, BBS_3, BBS_4, BBS_5, BBS_6, BBS_8
-export Square, coordinates
+export Direction, DIR_N, DIR_S, DIR_E, DIR_W, DIR_ALL
+export Square, slide, coordinates, neighbors
 export Bitboard, from_bit_vector, universe, empty, square, row, column
 
 """
-Utility placeholder fot the size of a Bitboard.
+Utility placeholder for the size of a Bitboard.
 """
 BitboardSize = Int8
 
@@ -16,6 +17,21 @@ const BBS_5 = BitboardSize(5)
 const BBS_6 = BitboardSize(6)
 const BBS_8 = BitboardSize(8)
 
+# TODO: i hate this: better to ENUM the directions and have a function compute the deltas
+"""
+Utility placeholder for the cardinal directions on the board
+"""
+struct Direction
+    dx::Int8
+    dy::Int8
+end
+
+const DIR_N = Direction(0, 1)
+const DIR_S = Direction(0, -1)
+const DIR_E = Direction(1, 0)
+const DIR_W = Direction(-1, 0)
+const DIR_ALL = [DIR_N, DIR_S, DIR_E, DIR_W]
+
 """
 Representation of a square
 """
@@ -23,11 +39,20 @@ struct Square
     index::Int8
 end
 
-# coordinates(size::BitboardSize, sq::Square) = (row=sq.index ÷ size + 1, column=sq.index % size)
-function coordinates(size::BitboardSize, sq::Square)
-    row = (sq.index - 1) ÷ size + 1
-    column = sq.index % size
-    row, column != 0 ? column : size
+Square(size::BitboardSize, row::Integer, column::Integer) = Square((row - 1) * size + column)
+
+row(size::BitboardSize, sq::Square) = (sq.index - 1) ÷ size + 1
+column(size::BitboardSize, sq::Square) = ((c = sq.index % size) == 0 ? size : c)
+coordinates(size::BitboardSize, sq::Square) = (row(size, sq), column(size, sq))
+
+# TODO: as below
+slide(size::BitboardSize, sq::Square, dir::Direction) = Square(size, row(size, sq) + dir.dy, column(size, sq) + dir.dx)
+
+# TODO: this could be really slow, can i do better?
+# maybe using this beauty of a bitboard implementation below?
+function neighbors(size::BitboardSize, sq::Square)
+    y, x = coordinates(size, sq)
+    filter(dir -> 0 < x + dir.dx ≤ size && 0 < y + dir.dy ≤ size, DIR_ALL)
 end
 
 """

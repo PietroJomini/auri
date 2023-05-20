@@ -3,7 +3,7 @@ using StaticArrays
 export Position, fromArrays
 
 struct Position
-    size::Int8
+    size::BitboardSize
     white::Bitboard
     black::Bitboard
     caps::Bitboard
