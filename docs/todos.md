@@ -4,10 +4,12 @@
     - [ ] tps / ptn
       - [ ] moves / square from ptn
       - [ ] tps last digits
+      - [ ] * if slide flattens
     - [ ] moves
       - [x] generate
       - [ ] apply
       - [ ] validate
+      - [ ] add a flag to check if a slide flattens (to undo moves)
     - [ ] win / tie conditions
       - [x] routes
       - [ ] ties
