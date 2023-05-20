@@ -17,7 +17,7 @@ end
 move(size::BitboardSize, placement::Placement) = square(size, placement.at)
 function move(size::BitboardSize, slide::Slide, long::Bool = false)
     l = sum(slide.height)
-    o = square(size, slide.oigin)
+    o = square(size, slide.origin)
     d = DIRECTIONS[slide.direction]
     h = join(Int.(slide.height[begin:slide.length]))
 

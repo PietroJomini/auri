@@ -2,7 +2,7 @@ using StaticArrays
 
 export Position, fromArrays
 
-struct Position
+mutable struct Position
     size::BitboardSize
     white::Bitboard
     black::Bitboard

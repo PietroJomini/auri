@@ -6,7 +6,7 @@
     - [x] to tps
     - [x] moves
     - [ ] win / tie conditions
-      - [ ] routes
+      - [x] routes
   - [ ] game
 - [ ] TEI
 - [ ] agents
