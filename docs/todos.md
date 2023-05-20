@@ -2,9 +2,11 @@
 - [ ] gamerules
   - [x] position
     - [x] from tps
+      - [ ] last digits
     - [x] to tps
     - [x] moves
     - [ ] win / tie conditions
+      - [ ] routes
   - [ ] game
 - [ ] TEI
 - [ ] agents
