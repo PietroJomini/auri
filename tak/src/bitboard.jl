@@ -6,17 +6,6 @@ export Direction, DIR_N, DIR_S, DIR_E, DIR_W, DIR_ALL
 export Square, slide, coordinates, neighbors
 export Bitboard, from_bit_vector, universe, empty, square, row, column
 
-"""
-Utility placeholder for the size of a Bitboard.
-"""
-BitboardSize = Int8
-
-const BBS_3 = BitboardSize(3)
-const BBS_4 = BitboardSize(4)
-const BBS_5 = BitboardSize(5)
-const BBS_6 = BitboardSize(6)
-const BBS_8 = BitboardSize(8)
-
 # TODO: i hate this: better to ENUM the directions and have a function compute the deltas
 """
 Utility placeholder for the cardinal directions on the board
