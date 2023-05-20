@@ -2,9 +2,16 @@
 A place for all the hard-coded rulebook constants
 """
 
+export Player, White, Black
 export Piece, Flatstone, Capstone, Wall
 export BitboardSize, BBS_3, BBS_4, BBS_5, BBS_6, BBS_7, BBS_8
 export SETUP
+
+"""Players enumeration"""
+@enum Player begin
+    White
+    Black
+end
 
 """Pieces kinds enumeration"""
 @enum Piece begin

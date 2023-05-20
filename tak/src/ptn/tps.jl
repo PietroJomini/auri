@@ -1,23 +1,7 @@
-module TPS
-
-using StaticArrays, ..Tak
-
-export parse_tps, tps, Syntax
-
-struct Syntax
-    white::Char
-    black::Char
-    wall::Char
-    capstone::Char
-    row_separator::Char
-    square_separator::Char
-    empty::Char
-end
-
-const STD = Syntax('1', '2', 'S',  'C', '/', ',', 'x')
+export parse_tps, tps
 
 # TODO: technically, this results ina  180° rotated boards. do i care?
-function parse_tps(tps::String, syntax::Syntax = STD)
+function parse_tps(tps::String, syntax::Syntax=STD)
     size = BitboardSize(count(syntax.row_separator, tps) + 1)
     index = 1
     jumping = false
@@ -33,15 +17,15 @@ function parse_tps(tps::String, syntax::Syntax = STD)
         elseif c ∈ (syntax.row_separator, syntax.square_separator)
             index += 1
             jumping = false
-        elseif c == syntax.capstone
-            caps = caps ∪ square(size, index)
-        elseif c == syntax.wall
-            walls = walls ∪ square(size, index)
+        elseif c == syntax.pieces[Capstone]
+            caps = caps ∪ Tak.square(size, index)
+        elseif c == syntax.pieces[Wall]
+            walls = walls ∪ Tak.square(size, index)
         elseif jumping && isdigit(c)
             index += parse(Int, c) - 1
-        elseif c ∈ (syntax.white, syntax.black)
+        elseif c ∈ (syntax.players[White], syntax.players[Black])
             heights[index] += 1
-            value = (c == syntax.white) ? 0 : 1
+            value = (c == syntax.players[White]) ? 0 : 1
             stacks[index] = (stacks[index] << 1) + value
             ceiling[index] = value
         end
@@ -72,11 +56,11 @@ function tps(position::Position, syntax::Syntax=STD)
                     jumps = 0
                 end
 
-                s = square(position.size, index)
+                s = Tak.square(position.size, index)
                 stack = bitstring(position.stacks[index].raw)[end-height+1:end]
 
-                push!(cell, replace(stack, "0" => syntax.white, "1" => syntax.black))
-                push!(cell, s ∈ position.caps ? syntax.capstone : s ∈ position.walls ? syntax.wall : "")
+                push!(cell, replace(stack, "0" => syntax.players[White], "1" => syntax.players[Black]))
+                push!(cell, s ⊆ position.caps ? syntax.pieces[Capstone] : s ⊆ position.walls ? syntax.pieces[Wall] : "")
                 push!(rows[row_index], join(cell))
             end
         end
@@ -88,6 +72,4 @@ function tps(position::Position, syntax::Syntax=STD)
     end
 
     join(join.(rows, syntax.square_separator), syntax.row_separator)
-end
-
 end

@@ -1,12 +1,16 @@
 - [x] bitboards
 - [ ] gamerules
-  - [x] position
-    - [x] from tps
-      - [ ] last digits
-    - [x] to tps
-    - [x] moves
+  - [ ] position
+    - [ ] tps / ptn
+      - [ ] moves / square from ptn
+      - [ ] tps last digits
+    - [ ] moves
+      - [x] generate
+      - [ ] apply
+      - [ ] validate
     - [ ] win / tie conditions
       - [x] routes
+      - [ ] ties
   - [ ] game
 - [ ] TEI
 - [ ] agents

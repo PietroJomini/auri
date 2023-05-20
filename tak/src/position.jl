@@ -15,5 +15,5 @@ end
 function Base.show(io::IO, position::Position)
     print(io, "Position\
         {$(position.size)x$(position.size)}\
-        [\"$(Tak.TPS.tps(position))\"]")
+        [\"$(Tak.PTN.tps(position))\"]")
 end
