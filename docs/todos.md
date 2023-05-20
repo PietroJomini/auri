@@ -12,4 +12,7 @@
   - [ ] 3x3
   - [ ] 5x5
 
+- [ ] tests
+  - [ ] perft (against other bots reults?)
+
 - [ ] better sized bitboard (and squares) repr using a Sized{T<:(Bitboatd,Square)>} struct holding a size-agnostic Bitboard
