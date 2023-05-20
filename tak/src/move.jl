@@ -8,14 +8,11 @@ abstract type Move end
 Representation of a placement
 """
 struct Placement <: Move
-    size::BitboardSize
     at::Square
 end
 
 placements_mask(pos::Position) = ~(pos.white ∪ pos.black)
-placements(pos::Position) = map(sq -> Placement(pos.size, sq), placements_mask(pos))
-
-Base.show(io::IO, pl::Placement) = print(io, "Placement($(Tak.PTN.square(pl.size, pl.at)))")
+placements(pos::Position) = map(sq -> Placement(sq), placements_mask(pos))
 
 # TODO: pack `height` in a UInt32 representing 8 4-bits stacks
 # and precompile all the possibilities
