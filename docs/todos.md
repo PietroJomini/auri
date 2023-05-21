@@ -22,5 +22,6 @@
 
 - [ ] tests
   - [ ] perft (against other bots reults?)
+  - [ ] double check tiltaks perfts, they seems strange
 
 - [ ] better sized bitboard (and squares) repr using a Sized{T<:(Bitboatd,Square)>} struct holding a size-agnostic Bitboard

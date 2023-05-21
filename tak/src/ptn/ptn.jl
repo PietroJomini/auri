@@ -28,7 +28,7 @@ const STD = Syntax(
     '*',
     "'",
     "''",
-    SVector{6}("??" "?" "?!" "!?" "!" "!!")
+    SVector{6}(["??", "?", "?!", "!?", "!", "!!"])
 )
 
 function square(size::BitboardSize, sq::Square, syntax::Syntax=STD)
