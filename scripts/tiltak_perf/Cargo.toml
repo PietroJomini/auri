@@ -1,0 +1,8 @@
+[package]
+name = "tiltak_perf"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pgn-traits = "0.4.1"
+tiltak = { git = "https://github.com/MortenLohne/tiltak.git" }
