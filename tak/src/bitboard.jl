@@ -2,7 +2,7 @@ import Base.==, Base.-, Base.+, Base.<<, Base.>>, Base.*, Base.~
 import Base.in, Base.union, Base.intersect, Base.isless, Base.issubset
 
 export BitboardSize, BBS_3, BBS_4, BBS_5, BBS_6, BBS_8
-export Direction, DIR_N, DIR_S, DIR_E, DIR_W, DIR_ALL
+export Direction, DIR_N, DIR_S, DIR_E, DIR_W, DIR_ALL, inverse
 export Square, slide, coordinates, neighbors
 export Bitboard, from_bit_vector, universe, empty, square, row, column
 
@@ -20,6 +20,8 @@ const DIR_S = Direction(0, -1)
 const DIR_E = Direction(1, 0)
 const DIR_W = Direction(-1, 0)
 const DIR_ALL = [DIR_N, DIR_S, DIR_E, DIR_W]
+
+inverse(dir::Direction) = Direction(-dir.dx, -dir.dy)
 
 """
 Representation of a square

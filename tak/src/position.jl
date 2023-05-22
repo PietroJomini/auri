@@ -8,8 +8,8 @@ mutable struct Position
     black::Bitboard
     caps::Bitboard
     walls::Bitboard
-    heights::SVector{64,UInt8}
-    stacks::SVector{64,Bitboard}
+    heights::MVector{64,UInt8}
+    stacks::MVector{64,Bitboard}
 end
 
 function Base.show(io::IO, position::Position)
@@ -25,8 +25,8 @@ startposition(size::BitboardSize) = Position(
     empty(size),
     empty(size),
     empty(size),
-    SVector{64}(zeros(UInt8, 64)),
-    SVector{64}([empty(size) for _ ∈ 1:64])
+    MVector{64}(zeros(UInt8, 64)),
+    MVector{64}([empty(size) for _ ∈ 1:64])
 )
 
 # TODO: walls and caps
@@ -53,8 +53,8 @@ function random(size::BitboardSize)
         length(getfield(p, csymbol)) == SETUP[size][1] && (colors = [opponent(color)])
     end
 
-    p.heights = SVector{64}(heights)
-    p.stacks = SVector{64}(stacks)
+    p.heights = MVector{64}(heights)
+    p.stacks = MVector{64}(stacks)
     p
 end
 

@@ -33,8 +33,8 @@ function parse_tps(tps::String, syntax::Syntax=STD)
 
     white = from_bit_vector(size, ceiling .== 0)
     black = from_bit_vector(size, ceiling .== 1)
-    stacks = SVector{64}(stacks)
-    heights = SVector{64}(heights)
+    stacks = MVector{64}(stacks)
+    heights = MVector{64}(heights)
 
     Position(size, white, black, caps, walls, heights, stacks)
 end

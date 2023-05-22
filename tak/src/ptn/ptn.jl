@@ -43,10 +43,10 @@ function move(size::BitboardSize, p::Placement, syntax::Syntax=STD)
 end
 
 function move(size::BitboardSize, slide::Slide, long::Bool=false, syntax::Syntax=STD)
-    l = sum(slide.height)
+    l = sum(slide.heights)
     o = square(size, slide.origin, syntax)
     d = syntax.directions[slide.direction]
-    h = join(Int.(slide.height[begin:slide.length]))
+    h = join(Int.(slide.heights[begin:slide.length]))
 
     !long && slide.length == 1 && (h = "")
     !long && l == 1 && (l = "")

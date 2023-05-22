@@ -1,17 +1,18 @@
 using StaticArrays
 
-export Slide, compute_slides, walk, legal_slides, slides
+export Slide, compute_slides, walk, legal_slides, slides, head, apply!
 
 struct Slide
     origin::Square
     direction::Direction
     length::UInt8
-    height::SVector{8,UInt8}
+    heights::SVector{8,UInt8}
 end
 
 fill_sa(s::Vector) = SVector{8, UInt8}([s; (0 for _ in length(s):7)...])
-Slide(origin::Square, dir::Direction, height::Vector) = Slide(origin, dir, length(height), fill_sa(height))
+Slide(origin::Square, dir::Direction, heights::Vector) = Slide(origin, dir, length(heights), fill_sa(heights))
 
+# TODO: something wrong, eg for (4, 3) doesn't generate [1, 2], [2, 1]
 function compute_slides(height::Int, cap::Int, previous::Vector{Int} = Vector{Int}())::Vector{Vector{Int}}
     cap == 0 && return []
     (height == 0 || length(previous) == cap) && return [previous]
@@ -39,3 +40,34 @@ function slides(pos::Position, at::Square)
     sls = [[(dir, sl) for sl ∈ legal_slides(pos, dir, at)] for dir ∈ dirs]
     return [Slide(at, dir, sl) for (dir, sl) ∈ vcat(sls...)]
 end
+
+head(size::BitboardSize, sl::Slide) = reduce((sq, _) -> slide(size, sq, sl.direction), 1:(sl.length); init=sl.origin)
+
+function apply!(pos::Position, sl::Slide)
+    at = head(pos.size, sl)
+
+    # if needed, update caps and walls
+    sl.origin ∈ pos.caps && (pos.caps = (pos.caps - square(pos.size, sl.origin.index)) ∪ square(pos.size, at.index))
+    sl.origin ∈ pos.walls && (pos.walls = (pos.walls - square(pos.size, sl.origin.index)) ∪ square(pos.size, at.index))
+
+    # update the stacks
+    for i ∈ 1:sl.length
+        h = sl.heights[end-i-(7 - sl.length)]
+
+        # add the pieces to the pos stack
+        pos.heights[at.index] += h
+        pos.stacks[at.index] = (pos.stacks[at.index] << h) ∪ (pos.stacks[sl.origin.index] ∩ Bitboard(pos.size, 2^h-1))
+
+        # remove pieces from the origin
+        pos.heights[sl.origin.index] -= h
+        pos.stacks[sl.origin.index] >> h
+
+        # slide the pointer
+        at = slide(pos.size, at, inverse(sl.direction))
+    end
+
+    pos
+end
+
+# for compatibility
+apply!(pos::Position, sl::Slide, _::Player) = apply!(pos, sl)
