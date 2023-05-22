@@ -9,9 +9,12 @@ export SETUP
 
 """Players enumeration"""
 @enum Player begin
-    White
-    Black
+    White = 0
+    Black = 1
 end
+
+opponent(player::Player) = player == White ? Black : White
+symbol(player::Player) = player == White ? :white : :black
 
 """Pieces kinds enumeration"""
 @enum Piece begin

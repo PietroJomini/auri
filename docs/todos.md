@@ -7,6 +7,7 @@
       - [ ] * if slide flattens
     - [ ] moves
       - [x] generate
+        - [ ] first placment can only be a stone
       - [ ] apply
       - [ ] validate
       - [ ] add a flag to check if a slide flattens (to undo moves)
