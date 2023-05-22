@@ -1,6 +1,6 @@
 using StaticArrays
 
-export Position, startposition, random
+export Position, startposition, random, stats
 
 mutable struct Position
     size::BitboardSize
@@ -56,4 +56,17 @@ function random(size::BitboardSize)
     p.heights = SVector{64}(heights)
     p.stacks = SVector{64}(stacks)
     p
+end
+
+struct Stats
+    white::Tuple{Int, Int}
+    black::Tuple{Int, Int}
+end
+
+function stats(pos::Position)
+    bcaps = length(pos.caps ∩ pos.black)
+    wcaps = length(pos.caps ∩ pos.white)
+    bflats = sum(map(stack -> length(stack), pos.stacks)) - bcaps
+    wflats = sum(pos.heights) - bflats - length(pos.caps)
+    Stats((wflats, wcaps), (bflats, bcaps))
 end

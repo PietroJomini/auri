@@ -1,6 +1,6 @@
-export perf1
+export perft1
 
-struct PerfResult
+struct PerftResult
     total::Int
     nplacements::Int
     nslides::Int
@@ -8,20 +8,19 @@ struct PerfResult
     slides::Vector{Slide}
 end
 
-Base.show(io::IO, pr::PerfResult) = print(io, "PerfResult[$(pr.total); placements=$(pr.nplacements); slides=$(pr.nslides)]")
+Base.show(io::IO, pr::PerftResult) = print(io, "PerfResult[$(pr.total); placements=$(pr.nplacements); slides=$(pr.nslides)]")
 
-# TODO: i shouldn't have to add remaining, bu i should get them from the position
-# eg first placement forced to a flatstone
-function perf1(pos::Position, remaining::Vector{Piece}=[Wall, Capstone, Flatstone])
-    pls = placements(pos, remaining)
+# TODO: first placement forced to flatstone
+function perft1(pos::Position, color::Player)
+    remp = getfield(stats(pos), symbol(color)) .< SETUP[pos.size]
+    pls = placements(pos; flats=remp[1], walls=remp[1], caps=remp[2])
+
     sls = []
-
-    # should i differ between perf-ing for white and black?
-    for p ∈ (pos.white ∪ pos.black)
+    for p ∈ getfield(pos, symbol(color))
         append!(sls, slides(pos, p))
     end
 
     npls = length(pls)
     nsls = length(sls)
-    PerfResult(npls + nsls, npls, nsls, pls, sls)
+    PerftResult(npls + nsls, npls, nsls, pls, sls)
 end
