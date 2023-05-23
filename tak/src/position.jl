@@ -1,6 +1,7 @@
 using StaticArrays
+import Base.==
 
-export Position, startposition, random, stats
+export Position, turn, startposition, random, stats
 
 mutable struct Position
     size::BitboardSize
@@ -10,7 +11,15 @@ mutable struct Position
     walls::Bitboard
     heights::MVector{64,UInt8}
     stacks::MVector{64,Bitboard}
+
+    # do I need to move this into a "game" entity?
+    move::UInt32
 end
+
+turn(pos::Position) = Player(rem(pos.move, 2))
+
+==(a::Position, b::Position) = (a.size == b.size && a.white == b.white && a.black == b.black && a.caps == b.caps && a.walls == b.walls && a.heights == b.heights && a.stacks == b.stacks && a.move == b.move)
+
 
 function Base.show(io::IO, position::Position)
     print(io, "Position\
@@ -26,7 +35,8 @@ startposition(size::BitboardSize) = Position(
     empty(size),
     empty(size),
     MVector{64}(zeros(UInt8, 64)),
-    MVector{64}([empty(size) for _ ∈ 1:64])
+    MVector{64}([empty(size) for _ ∈ 1:64]),
+    0
 )
 
 # TODO: walls and caps
@@ -59,8 +69,8 @@ function random(size::BitboardSize)
 end
 
 struct Stats
-    white::Tuple{Int, Int}
-    black::Tuple{Int, Int}
+    white::Tuple{Int,Int}
+    black::Tuple{Int,Int}
 end
 
 function stats(pos::Position)

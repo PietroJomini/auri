@@ -41,6 +41,7 @@ function slides(pos::Position, at::Square)
     return [Slide(at, dir, sl) for (dir, sl) ∈ vcat(sls...)]
 end
 
+slides(pos::Position) = vcat([slides(pos, sq) for sq ∈ getfield(pos, symbol(turn(pos)))]...)
 head(size::BitboardSize, sl::Slide) = reduce((sq, _) -> slide(size, sq, sl.direction), 1:(sl.length); init=sl.origin)
 
 function apply!(pos::Position, sl::Slide)
@@ -66,8 +67,8 @@ function apply!(pos::Position, sl::Slide)
         at = slide(pos.size, at, inverse(sl.direction))
     end
 
+    # update the move count
+    pos.move += 1
+
     pos
 end
-
-# for compatibility
-apply!(pos::Position, sl::Slide, _::Player) = apply!(pos, sl)

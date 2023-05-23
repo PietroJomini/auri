@@ -2,6 +2,12 @@ export parse_tps, tps
 
 # TODO: technically, this results ina  180° rotated boards. do i care?
 function parse_tps(tps::String, syntax::Syntax=STD)
+    pieces = split(tps, " ")
+    length(pieces) != 3 && throw(ArgumentError("Malformed TPS string"))
+
+    tps, turn, moves = pieces
+    move = (parse(Int, moves) - 1) * 2 + parse(Int, turn) - 1
+
     size = BitboardSize(count(syntax.row_separator, tps) + 1)
     index = 1
     jumping = false
@@ -36,7 +42,7 @@ function parse_tps(tps::String, syntax::Syntax=STD)
     stacks = MVector{64}(stacks)
     heights = MVector{64}(heights)
 
-    Position(size, white, black, caps, walls, heights, stacks)
+    Position(size, white, black, caps, walls, heights, stacks, move)
 end
 
 function tps(position::Position, syntax::Syntax=STD)
@@ -71,5 +77,9 @@ function tps(position::Position, syntax::Syntax=STD)
         end
     end
 
-    join(join.(rows, syntax.square_separator), syntax.row_separator)
+    move = position.move ÷ 2 + 1
+    turn = rem(position.move, 2) + 1
+    tps = join(join.(rows, syntax.square_separator), syntax.row_separator)
+
+    "$tps $turn $move"
 end

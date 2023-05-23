@@ -2,13 +2,15 @@
 - [ ] gamerules
   - [ ] position
     - [ ] tps / ptn
-      - [ ] moves / square from ptn
-      - [ ] tps last digits
+      - [x] moves / square from ptn
+      - [x] tps last digits
       - [ ] * if slide flattens
     - [ ] moves
       - [x] generate
-        - [x] first placment can only be a stone
-      - [ ] apply
+        - [x] first 2 placment can only be a stone
+        - [x] first placements of opposite color
+      - [x] do
+      - [ ] undo
       - [ ] validate
       - [ ] add a flag to check if a slide flattens (to undo moves)
     - [ ] win / tie conditions
@@ -20,8 +22,18 @@
 - [ ] solvers
   - [ ] 3x3
   - [ ] 5x5
+- [ ] start working on a cli
 
 - [ ] tests
   - [ ] perft
+    - [x] setup
+    - [ ] build data to test agains
+      - [x] hack in tiltak's perft
+      - [ ] hack in taktician's perft
+      - [ ] as above, but divide (like stockfish)
 
 - [ ] better sized bitboard (and squares) repr using a Sized{T<:(Bitboatd,Square)>} struct holding a size-agnostic Bitboard
+- [ ] general refactor, comments, documentation... i'm starting to get lost
+  - [ ] comments
+  - [ ] documentation
+  - [ ] lint

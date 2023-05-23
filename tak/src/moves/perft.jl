@@ -1,47 +1,20 @@
-export perft1, perft
+export move, perft
 
-struct PerftResult
-    total::Int
-    nplacements::Int
-    nslides::Int
-    placements::Vector{Placement}
-    slides::Vector{Slide}
-end
+"""
+Generate all possible moves in a given position
+"""
+moves(pos::Position) = pos.move ≥ 2 ? [placements(pos); slides(pos);] : placements(pos)
 
-Base.show(io::IO, pr::PerftResult) = print(io, "PerfResult[$(pr.total); placements=$(pr.nplacements); slides=$(pr.nslides)]")
+function perft(pos::Position, depth::Int)
+    depth == 0 && return 1
 
-function perft1(pos::Position, color::Player)
-    remp = getfield(stats(pos), symbol(color)) .< SETUP[pos.size]
-    pls = placements(pos; flats=remp[1], walls=remp[1], caps=remp[2])
-
-    sls = []
-    for p ∈ getfield(pos, symbol(color))
-        append!(sls, slides(pos, p))
-    end
-
-    npls = length(pls)
-    nsls = length(sls)
-    PerftResult(npls + nsls, npls, nsls, pls, sls)
-end
-
-function perft(pos::Position, color::Player, depth::Int)    
-    remp = getfield(stats(pos), symbol(color)) .< SETUP[pos.size]
-    pls = placements(pos; flats=remp[1], walls=remp[1], caps=remp[2])
-
-    sls = []
-    for p ∈ getfield(pos, symbol(color))
-        append!(sls, slides(pos, p))
-    end
-
-    # batch parft
-    depth == 1 && return length([pls; sls])
+    amoves = moves(pos)
+    depth == 1 && return length(amoves)
 
     nodes = 0
-    for move ∈ [pls; sls]
-        # TODO: undo! moves
+    for move ∈ amoves
         npos = deepcopy(pos)
-        nodes += perft(apply!(npos, move, color), opponent(color), depth - 1)
+        nodes += perft(apply!(npos, move), depth - 1)
     end
-
     nodes
 end
