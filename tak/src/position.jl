@@ -16,6 +16,8 @@ mutable struct Position
     move::UInt32
 end
 
+Position(tps::String) = Tak.PTN.from_tps(tps)
+
 """Which player's turn is"""
 turn(pos::Position) = Player(rem(pos.move, 2))
 

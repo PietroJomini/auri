@@ -12,8 +12,8 @@ Bitboard(bits::BitVector) = Bitboard(evalpoly(UInt64(2), bits))
 
 empty() = Bitboard(0)
 universe() = universe(BS8)
-universe(size::Size) = universe(Int(size))
-universe(size::Integer) = Bitboard(UInt64(2)^size^2 - 1)
+universe(size::Size) = universe(Int(size)^2)
+universe(size::Integer) = Bitboard(UInt64(2)^size - 1)
 
 union(a::Bitboard, b::Bitboard) = Bitboard(a.value | b.value)
 intersect(a::Bitboard, b::Bitboard) = Bitboard(a.value & b.value)

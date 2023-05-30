@@ -76,7 +76,7 @@ function apply!(pos::Position, sl::Slide)
 
         # add the pieces to the pos stack
         pos.heights[atindex] += h
-        pos.stacks[atindex] = (pos.stacks[atindex] << h) ∪ (pos.stacks[orindex] ∩ universe(h))
+        pos.stacks[atindex] = (pos.stacks[atindex] << h) ∪ (pos.stacks[orindex] ∩ universe(Int(h)))
 
         # remove pieces from the origin
         pos.heights[orindex] -= h
@@ -89,6 +89,44 @@ function apply!(pos::Position, sl::Slide)
 
     # update the move count
     pos.move += 1
+
+    pos
+end
+
+function undo!(pos::Position, sl::Slide)
+    destination = slide(sl.origin, sl.direction, sl.length)
+    dindex = index(destination, pos.size)
+    oindex = index(sl.origin, pos.size)
+    dbb = square(dindex)
+    obb = square(oindex)
+
+    # if needed, update caps and walls
+    dbb ⊆ pos.caps && (pos.caps = (pos.caps - dbb) ∪ obb)
+    dbb ⊆ pos.walls && (pos.walls = (pos.walls - dbb) ∪ obb)
+    sl.flattens && (pos.walls = (pos.walls ∪ dbb))
+
+    at = slide(sl.origin, sl.direction)
+    atindex = index(at, pos.size)
+
+    #update the stacks
+    for i ∈ 1:sl.length
+        h = sl.heights[i]
+
+        # add the pieces to the origin
+        pos.heights[oindex] += h
+        pos.stacks[oindex] = (pos.stacks[oindex] << h) ∪ (pos.stacks[atindex] ∩ universe(Int(h)))
+
+        # remove the pieces from the pointer
+        pos.heights[atindex] -= h
+        pos.stacks[atindex] = pos.stacks[atindex] >> h
+        
+        # slide the pointer
+        at = slide(at, sl.direction)
+        atindex = index(at, pos.size)
+    end
+
+    #update the move count
+    pos.move -= 1
 
     pos
 end
