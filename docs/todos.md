@@ -12,7 +12,7 @@
       - [x] do
       - [ ] undo
       - [ ] validate
-      - [ ] add a flag to check if a slide flattens (to undo moves)
+      - [x] add a flag to check if a slide flattens (to undo moves)
     - [ ] win / tie conditions
       - [x] routes
       - [ ] ties

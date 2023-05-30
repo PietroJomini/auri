@@ -17,9 +17,10 @@ function move(slide::Slide, long::Bool=false, syntax::Syntax=STD)
     o = square(slide.origin, syntax)
     d = syntax.directions[slide.direction]
     h = join(Int.(slide.heights[begin:slide.length]))
+    f = slide.flattens ? syntax.flattens : ""
 
     !long && slide.length == 1 && (h = "")
     !long && l == 1 && (l = "")
     
-    return "$l$o$d$h"
+    return "$l$o$d$h$f"
 end

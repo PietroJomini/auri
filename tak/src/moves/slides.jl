@@ -7,10 +7,11 @@ struct Slide <: Move
     direction::Direction
     length::UInt8
     heights::SVector{8,UInt8}
+    flattens::Bool
 end
 
 fill_sa(s::Vector) = SVector{8, UInt8}([s; (0 for _ in length(s):7)...])
-Slide(origin::Square, dir::Direction, heights::Vector) = Slide(origin, dir, length(heights), fill_sa(heights))
+Slide(origin::Square, dir::Direction, heights::Vector, flattens::Bool) = Slide(origin, dir, length(heights), fill_sa(heights), flattens)
 
 # TODO: should i precompile this?
 # max height = 50
@@ -35,19 +36,22 @@ function slides(pos::Position, at::Square, dir::Direction)
     cap, niw = walk(pos, dir, at)
 
     # allow flattening only if the ceiling is a capstone
-    niw = niw && BB.in(at, pos.caps, pos.size)
+    flattens = niw && BB.in(at, pos.caps, pos.size)
 
     slides = compute_slides(Int(height), cap + niw)
-    niw ? filter(hs -> hs[end] == 1 || length(hs) ≤ cap, slides) : slides
+    (flattens ? filter(hs -> hs[end] == 1 || length(hs) ≤ cap, slides) : slides, flattens)
 end
 
-function slides(pos::Position, at::Square)
-    dirs = getindex.(neighbors(at, pos.size), 1)
-    sls = map(dir -> [(dir, sl) for sl ∈ slides(pos, at, dir)], dirs)
-    return [Slide(at, dir, sl) for (dir, sl) ∈ vcat(sls...)]
+function slides(pos::Position, at::Square)::Vector{Slide}
+    asls = []
+    for dir ∈ getindex.(neighbors(at, pos.size), 1)
+        sls, flattens = slides(pos, at, dir)
+        append!(asls, map(sl -> Slide(at, dir, sl, flattens), sls))
+    end
+    asls
 end
 
-function slides(pos::Position)
+function slides(pos::Position)::Vector{Slide}
     mask = getfield(pos, symbol(turn(pos)))
     vcat(map(sq -> slides(pos, Square(sq, pos.size)), mask)...)
 end
@@ -56,12 +60,15 @@ function apply!(pos::Position, sl::Slide)
     at = slide(sl.origin, sl.direction, sl.length)
     atindex = index(at, pos.size)
     orindex = index(sl.origin, pos.size)
+    orb = square(orindex)
+    atb = square(atindex)
     idir = -sl.direction
 
     # if needed, update caps and walls
     # i could use in(...), but it would compute twice index(...), making it slower
-    (orb = square(orindex)) ⊆ pos.caps && (pos.caps = (pos.caps - orb) ∪ square(atindex))
-    (orb = square(orindex)) ⊆ pos.walls && (pos.walls = (pos.walls - orb) ∪ square(atindex))
+    orb ⊆ pos.caps && (pos.caps = (pos.caps - orb) ∪ atb)
+    orb ⊆ pos.walls && (pos.walls = (pos.walls - orb) ∪ atb)
+    atb ⊆ pos.walls && (pos.walls = pos.walls - atb)
 
     # update the stacks
     for i ∈ 1:sl.length
@@ -73,7 +80,7 @@ function apply!(pos::Position, sl::Slide)
 
         # remove pieces from the origin
         pos.heights[orindex] -= h
-        pos.stacks[orindex] >> h
+        pos.stacks[orindex] = pos.stacks[orindex] >> h
 
         # slide the pointer
         at = slide(at, idir)
