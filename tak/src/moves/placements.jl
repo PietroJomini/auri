@@ -9,7 +9,7 @@ end
 placements_mask(p::Position) = ~(p.white ∪ p.black) ∩ universe(p.size)
 placement_color(p::Position) = p.move ≤ 1 ? opponent(turn(p)) : turn(p)
 
-function placements(p::Position)
+function placements(p::Position)::Vector{Placement}
     color = placement_color(p)
     mask = Square.(collect(placements_mask(p)), p.size)
     kinds = [Flatstone]

@@ -15,12 +15,12 @@ export SETUP
 Board size.
 """
 Size = UInt8
-BS3 = Size(3)
-BS4 = Size(4)
-BS5 = Size(5)
-BS6 = Size(6)
-BS7 = Size(7)
-BS8 = Size(8)
+const BS3::Size = Size(3)
+const BS4::Size = Size(4)
+const BS5::Size = Size(5)
+const BS6::Size = Size(6)
+const BS7::Size = Size(7)
+const BS8::Size = Size(8)
 
 """
 Cardinal directions
@@ -30,11 +30,11 @@ struct Direction
     dr::Int8
 end
 
-const DIR_N = Direction(0, 1)
-const DIR_S = Direction(0, -1)
-const DIR_E = Direction(1, 0)
-const DIR_W = Direction(-1, 0)
-const DIR_ALL = [DIR_N, DIR_S, DIR_E, DIR_W]
+const DIR_N::Direction = Direction(0, 1)
+const DIR_S::Direction = Direction(0, -1)
+const DIR_E::Direction = Direction(1, 0)
+const DIR_W::Direction = Direction(-1, 0)
+const DIR_ALL::Vector{Direction} = [DIR_N, DIR_S, DIR_E, DIR_W]
 
 -(d::Direction) = Direction(-d.dc, -d.dr)
 
@@ -61,7 +61,7 @@ symbol(player::Player) = player == White ? :white : :black
 """
 Amount of stones per board size
 """
-SETUP = Dict(
+const SETUP::Dict{Size,Tuple{Int, Int}} = Dict(
     BS3 => (10, 0),
     BS4 => (15, 0),
     BS5 => (21, 1),
