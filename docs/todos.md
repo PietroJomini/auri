@@ -7,8 +7,8 @@
       - [ ] * if slide flattens
     - [ ] moves
       - [x] generate
-        - [x] first 2 placment can only be a stone
-        - [x] first placements of opposite color
+        - [x] first 2 placements can only be a stone
+        - [x] first 2 placements of opposite color
       - [x] do
       - [ ] undo
       - [ ] validate
@@ -19,6 +19,9 @@
   - [ ] game
 - [ ] TEI
 - [ ] agents
+  - [x] random
+  - [ ] stockfish-like
+  - [ ] monte-carlo (alpha0-like)
 - [ ] solvers
   - [ ] 3x3
   - [ ] 5x5
@@ -32,8 +35,8 @@
       - [ ] hack in taktician's perft
       - [ ] as above, but divide (like stockfish)
 
-- [ ] better sized bitboard (and squares) repr using a Sized{T<:(Bitboatd,Square)>} struct holding a size-agnostic Bitboard
 - [ ] general refactor, comments, documentation... i'm starting to get lost
+  - [x] cleanup
   - [ ] comments
   - [ ] documentation
   - [ ] lint
