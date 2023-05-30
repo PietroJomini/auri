@@ -11,11 +11,11 @@
         - [x] first 2 placements can only be a stone
         - [x] first 2 placements of opposite color
       - [x] do
-      - [ ] undo
+      - [x] undo
       - [ ] validate
       - [x] add a flag to check if a slide flattens (to undo moves)
     - [ ] win / tie conditions
-      - [x] routes
+      - [ ] routes
       - [ ] ties
   - [ ] game
 - [ ] TEI
@@ -41,3 +41,5 @@
   - [ ] comments
   - [ ] documentation
   - [ ] lint
+
+- [ ] make things faster (much)

@@ -6,9 +6,9 @@ function perft(p::Position, depth::Int)
 
     nodes = 0
     for move ∈ moves(p)
-        # TODO: undo!(pos, move)
-        np = deepcopy(p)
-        nodes += perft(apply!(np, move), depth - 1)
+        apply!(p, move)
+        nodes += perft(p, depth - 1)
+        undo!(p, move)
     end
     nodes
 end
