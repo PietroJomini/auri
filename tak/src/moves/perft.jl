@@ -1,7 +1,7 @@
-export perft
+export perft, perftd
 
 function perft(p::Position, depth::Int)
-    depth == 0 && return 1
+    depth < 1 && return 1
     depth == 1 && return length(moves(p))
 
     nodes = 0
@@ -11,4 +11,16 @@ function perft(p::Position, depth::Int)
         nodes += perft(apply!(np, move), depth - 1)
     end
     nodes
+end
+
+# https://www.chessprogramming.org/Perft#Divide
+function perftd(p::Position, depth::Int)
+    nodes = 0
+    for move ∈ moves(p)
+        # TODO: undo!(pos, move)
+        np = deepcopy(p)
+        nodes += (pcount = perft(apply!(np, move), depth - 1))
+        println("$move: $pcount")
+    end
+    println("Node searched: $nodes")
 end

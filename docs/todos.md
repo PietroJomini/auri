@@ -4,7 +4,8 @@
     - [ ] tps / ptn
       - [x] moves / square from ptn
       - [x] tps last digits
-      - [ ] * if slide flattens
+      - [x] * if slide flattens
+      - [ ] game
     - [ ] moves
       - [x] generate
         - [x] first 2 placements can only be a stone
