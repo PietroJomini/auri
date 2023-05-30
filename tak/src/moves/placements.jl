@@ -1,4 +1,4 @@
-export Placement, placements, apply!
+export Placement, placements, apply!, undo!
 
 struct Placement <: Move
     at::Square
@@ -28,5 +28,16 @@ function apply!(pos::Position, pl::Placement)
     pos.heights[atindex] = 1
     pos.stacks[atindex] += Int(pl.color)
     pos.move += 1
+    pos
+end
+
+function undo!(pos::Position, pl::Placement)
+    atindex = index(pl.at, pos.size)
+    at = square(atindex)
+    color = symbol(pl.color)
+    setfield!(pos, color, getfield(pos, color) - at)
+    pos.heights[atindex] = 0
+    pos.stacks[atindex] = BB.empty()
+    pos.move -= 1
     pos
 end
