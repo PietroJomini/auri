@@ -1,11 +1,53 @@
 """
-A place for all the hard-coded rulebook constants
+A place for all the hard-coded rulebook constants 
+(and some other stuff that had no other place :=})
 """
 
-export Player, White, Black
-export Piece, Flatstone, Capstone, Wall
-export BitboardSize, BBS_3, BBS_4, BBS_5, BBS_6, BBS_7, BBS_8
+import Base.-
+
+export Size, BS3, BS4, BS5, BS6, BS7, BS8
+export Direction, DIR_N, DIR_S, DIR_E, DIR_W, DIR_ALL
+export Piece, Flatstone, Capstone, Wall, shape
+export Player, White, Black, opponent, symbol
 export SETUP
+
+"""
+Board size.
+"""
+Size = UInt8
+BS3 = Size(3)
+BS4 = Size(4)
+BS5 = Size(5)
+BS6 = Size(6)
+BS7 = Size(7)
+BS8 = Size(8)
+
+"""
+Cardinal directions
+"""
+struct Direction
+    dc::Int8
+    dr::Int8
+end
+
+const DIR_N = Direction(0, 1)
+const DIR_S = Direction(0, -1)
+const DIR_E = Direction(1, 0)
+const DIR_W = Direction(-1, 0)
+const DIR_ALL = [DIR_N, DIR_S, DIR_E, DIR_W]
+
+-(d::Direction) = Direction(-d.dc, -d.dr)
+
+"""
+Pieces kinds enumeration
+"""
+@enum Piece begin
+    Flatstone
+    Wall
+    Capstone
+end
+
+shape(p::Piece) = Piece(Int(p) ÷ 2 + 1)
 
 """Players enumeration"""
 @enum Player begin
@@ -13,36 +55,17 @@ export SETUP
     Black = 1
 end
 
-opponent(player::Player) = player == White ? Black : White
+opponent(p::Player) = p == White ? Black : White
 symbol(player::Player) = player == White ? :white : :black
-
-"""Pieces kinds enumeration"""
-@enum Piece begin
-    Flatstone
-    Capstone
-    Wall
-end
-
-"""
-Utility placeholder for the size of a Bitboard.
-"""
-BitboardSize = Int8
-
-const BBS_3 = BitboardSize(3)
-const BBS_4 = BitboardSize(4)
-const BBS_5 = BitboardSize(5)
-const BBS_6 = BitboardSize(6)
-const BBS_7 = BitboardSize(7)
-const BBS_8 = BitboardSize(8)
 
 """
 Amount of stones per board size
 """
 SETUP = Dict(
-    BBS_3 => (10, 0),
-    BBS_4 => (15, 0),
-    BBS_5 => (21, 1),
-    BBS_6 => (30, 1),
-    BBS_7 => (40, 2),
-    BBS_8 => (50, 2)
+    BS3 => (10, 0),
+    BS4 => (15, 0),
+    BS5 => (21, 1),
+    BS6 => (30, 1),
+    BS7 => (40, 2),
+    BS8 => (50, 2)
 )
