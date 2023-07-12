@@ -3,7 +3,7 @@ from typing import Dict
 
 from bidict import bidict
 
-from tak.position import Position, Piece
+from tak.position import Position, Piece, MODIFIERS, PLAYERS
 
 
 @dataclass
@@ -24,7 +24,7 @@ STD = Syntax(
 )
 
 
-def from_tps(tps: str, syntax: Syntax = STD):
+def from_tps(tps: str, syntax: Syntax = STD) -> Position:
     tps, turn, moves = tps.split(" ")
     p = Position(tps.count(syntax.row_separator) + 1)
     p.move = (int(moves) - 1) * 2 + int(turn) - 1
@@ -53,3 +53,41 @@ def from_tps(tps: str, syntax: Syntax = STD):
             index += 1
 
     return p
+
+def to_tps(p: Position, syntax: Syntax = STD) -> str:
+    rows = [[] for _ in range(p.size)]
+    jumps = 0
+
+    for row in range(p.size):
+        for col in range(p.size):
+
+            # start from the last row
+            index = (p.size - row - 1) * p.size + col
+
+            # check if the cell is empty
+            if len(p.stacks[index]) == 0:
+                jumps += 1
+            else:
+
+                # check for jumps
+                if jumps > 0:
+                    amount = "" if jumps == 1 else str(jumps)
+                    rows[row].append(f"{syntax.empty_cell}{amount}")
+                    jumps = 0
+                
+                # add cell
+                stack = [piece & PLAYERS for piece in p.stacks[index]]
+                cell = "".join([syntax.players[piece] for piece in stack])
+                modifier = syntax.pieces[p.stacks[index][-1] & MODIFIERS] if p.stacks[index][-1] & MODIFIERS in syntax.pieces else ""
+                rows[row].append(cell + modifier)
+
+    # this is annoying
+    if jumps > 0:
+        amount = "" if jumps == 1 else str(jumps)
+        rows[row].append(f"{syntax.empty_cell}{amount}")
+        jumps = 0
+
+    rows = map(syntax.square_separator.join, rows)
+    tps = syntax.row_separator.join(rows)
+    move, turn = divmod(p.move, 2)
+    return f"{tps} {turn + 1} {move + 1}"

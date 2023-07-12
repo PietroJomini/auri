@@ -8,6 +8,10 @@ class Piece(Flag):
     WALL = auto()
     FLAT = auto()
 
+PLAYERS = Piece.WHITE | Piece.BLACK
+MODIFIERS = Piece.CAP | Piece.WALL
+PIECES = Piece.CAP | Piece.WALL | Piece.FLAT
+
 class Position:
     """store a board setup"""
 
