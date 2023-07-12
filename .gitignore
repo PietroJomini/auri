@@ -1,3 +1,9 @@
-Manifest.toml
 dev
 engines
+
+# python stuff
+__pycache__
+Pipfile.lock
+
+#julia stuff
+Manifest.toml
