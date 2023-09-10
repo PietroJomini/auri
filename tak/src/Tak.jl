@@ -5,6 +5,7 @@ include("bitboard/mod.jl")
 include("position.jl")
 include("moves/mod.jl")
 include("ptn/mod.jl")
+include("routes.jl")
 
 # tests placebo
 export hello_tak

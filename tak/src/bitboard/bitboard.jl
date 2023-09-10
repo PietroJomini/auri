@@ -26,7 +26,7 @@ issubset(a::Bitboard, b::Bitboard) = b == (a ∪ b)
 
 # TODO: should I precompile squares, columns and rows?
 square(index::Integer) = Bitboard(1) << (index - 1)
-row(size::Size, index::Integer) = Bitboard(2^s() - 1) << ((index - 1) * size)
+row(size::Size, index::Integer) = Bitboard(2^size - 1) << ((index - 1) * size)
 column(size::Size, index::Integer) = reduce(∪, square(r * size) >> (size - index) for r ∈ 1:size)
 
 #https://docs.julialang.org/en/v1/manual/interfaces/#man-interfaces-broadcasting

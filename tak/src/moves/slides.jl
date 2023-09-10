@@ -56,6 +56,7 @@ function slides(pos::Position)::Vector{Slide}
     vcat(map(sq -> slides(pos, Square(sq, pos.size)), mask)...)
 end
 
+# TODO: update color bitboards
 function apply!(pos::Position, sl::Slide)
     at = slide(sl.origin, sl.direction, sl.length)
     atindex = index(at, pos.size)
