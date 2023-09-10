@@ -3,6 +3,7 @@ from itertools import chain
 from typing import List
 
 from tak.position import Piece, Position, PLAYERS, SETUP, PIECES
+from tak.utils import Direction
 
 
 @dataclass
@@ -10,6 +11,14 @@ class Placement:
     index: int
     kind: Piece
     color: Piece
+
+    def apply(self, p: Position) -> Position:
+        p.stacks[self.index].append(self.kind | self.color)
+        return p
+
+    def undo(self, p: Position) -> Position:
+        p.stacks[self.index].pop()
+        return p
 
 
 def placements(p: Position) -> List[Placement]:
@@ -30,10 +39,10 @@ def placements(p: Position) -> List[Placement]:
 
     return [Placement(index, piece, color) for piece in kinds for index in mask]
 
-def apply(po: Position, pl: Placement) -> Position:
-    po.stacks[pl.index].append(pl.kind | pl.color)
-    return po
 
-def undo(po: Position, pl: Placement) -> Position:
-    po.stacks[pl.index].pop()
-    return po
+@dataclass
+class Slide:
+    origin: int
+    direction: Direction
+    heights: List[int]
+    flattens: bool
