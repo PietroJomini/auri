@@ -1,0 +1,41 @@
+- tak
+  - board representation
+    - bitboards
+  - moves generation
+    - swap
+    - slides
+    - placements
+    - do, undo
+    - perft
+  - game endings
+    - routes
+    - ties
+      - no more pieces
+      - full board
+    - dragon clause
+  - tps, ptn
+- opening db
+- engine
+  - search
+  - evaluation
+    - hand-made euristic
+    - nnue
+- engines tournament
+- interfaces
+  - cli
+  - channel to ptn.ninka
+    - fork ptn.ninja to work with tei
+    - tei
+
+- [ ] 1 tak
+  - [x] 1.1
+    - [x] board representation
+    - [x] tps
+  - [ ] 1.2
+    - [ ] moves
+    - [ ] game endings
+- [ ] 2 interfaces
+  - [ ] ptn
+- [ ] 3 engines
+  - [ ] engine
+  - [ ] engines tournament
