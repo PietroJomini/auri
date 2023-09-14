@@ -31,7 +31,13 @@ void test_tps() {
     assert(p3.size  == 7 && p3.stp == 0 && p3.mc == 85);
 }
 
+void test_slides() {
+    // the length of the slide at each index should be 1
+    for (int i = 0; i < 6; i++) assert(SLIDES_LENGHT[SLIDES_INDEX[i]] == 1);
+}
+
 int main() {
     test_tps();
+    test_slides();
     return 0;
 }

@@ -33,6 +33,10 @@
     - [x] tps
   - [ ] 1.2
     - [ ] moves
+      - [ ] slides
+        - [x] generate slides
+        - [ ] filter allowed slides
+      - [ ] placements
     - [ ] game endings
 - [ ] 2 interfaces
   - [ ] ptn
