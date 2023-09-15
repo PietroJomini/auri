@@ -36,7 +36,7 @@
       - [ ] slides
         - [x] generate slides
         - [ ] filter allowed slides
-      - [ ] placements
+      - [x] placements
     - [ ] game endings
 - [ ] 2 interfaces
   - [ ] ptn

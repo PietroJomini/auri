@@ -1,6 +1,20 @@
 #pragma once
 #include <stdint.h>
 
+typedef enum {
+    // piece type
+    Flat = 0,
+    Cap = 1,
+    Wall = 2,
+
+    // color of the piece
+    White = 4,
+    Black = 8
+} Piece;
+
+// amount of pieces per board size
+extern const uint8_t SETUP[6][2];
+
 typedef struct {
     uint8_t size;  // board size
     uint8_t stp;   // side to play
@@ -15,6 +29,10 @@ typedef struct {
     // stacks
     uint64_t stacks[64];
     uint8_t heights[64];
+
+    // remaining pieces
+    // { .0 = white, .1 = black } { .0 = flats, .1 = caps }
+    uint8_t reserve[2][2];
 } Position;
 
 // create a new, empty position

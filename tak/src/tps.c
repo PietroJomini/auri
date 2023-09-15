@@ -9,14 +9,19 @@ Position tps2p(char *tps) {
     Position p = pempty();
     p.size = 1;
 
+    // pieces used
+    int flats[2] = {0, 0};
+    int caps[2] = {0, 0};
+
     // board description
+    int value = 0;
     int index = 0;
     int jumping = 0;
     while (*tps != ' ') {
         if (*tps == 'x') jumping = 1;
         else if ('0' <= *tps && *tps <= '9') {
             // here only digits, so it's safe to convert abruptly
-            int value = *tps - '0';
+            value = *tps - '0';
 
             // increment jumps
             if (jumping) jumping = value;
@@ -30,6 +35,9 @@ Position tps2p(char *tps) {
                 uint64_t *obb = (value == 1) ? &p.black : &p.white;
                 *bb |= SQ(index);
                 *obb &= ~SQ(index);
+
+                // update flats count
+                flats[value - 1] += 1;
             }
         } else {
             // here remains separators and modifiers
@@ -46,7 +54,13 @@ Position tps2p(char *tps) {
 
             // resolve modifiers
             if (*tps == 'S') p.walls |= SQ(index);
-            if (*tps == 'C') p.caps |= SQ(index);
+            if (*tps == 'C') {
+                p.caps |= SQ(index);
+
+                // update caps count
+                caps[value - 1] += 1;
+                flats[value - 1] -= 1;
+            }
 
             // update index if we are at a separator
             if (*tps == '/' || *tps == ',') index += 1;
@@ -81,6 +95,12 @@ Position tps2p(char *tps) {
     p.black = rotate(p.black, p.size) >> shift;
     p.caps = rotate(p.caps, p.size) >> shift;
     p.walls = rotate(p.walls, p.size) >> shift;
+
+    // setup remaining pieces, given the board size
+    p.reserve[0][0] = SETUP[p.size - 3][0] - flats[0];
+    p.reserve[1][0] = SETUP[p.size - 3][0] - flats[1];
+    p.reserve[0][1] = SETUP[p.size - 3][1] - caps[0];
+    p.reserve[1][1] = SETUP[p.size - 3][1] - caps[1];
 
     return p;
 }

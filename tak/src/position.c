@@ -1,8 +1,17 @@
 #include "position.h"
 
+// amount of pieces per board size
+const uint8_t SETUP[6][2] = {{10, 0}, {15, 0}, {21, 1}, {30, 1}, {40, 2}, {50, 2}};
+
 Position pempty() {
-    return (Position){
-        .size = 0, .stp = 0, .mc = 0, .white = 0, .black = 0, .walls = 0, .caps = 0};
+    return (Position){.size = 0,
+                      .stp = 0,
+                      .mc = 0,
+                      .white = 0,
+                      .black = 0,
+                      .walls = 0,
+                      .caps = 0,
+                      .reserve = {{0, 0}, {0, 0}}};
 }
 
 // adaptation http://graphics.stanford.edu/~seander/bithacks.html

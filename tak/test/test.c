@@ -6,6 +6,7 @@
 
 // TODO: more manually crafted test positions
 // TODO: test stacks
+// TODO: test remaining pieces
 void test_tps() {
     Position p1 = tps2p("x5/x5/x5/x5/x5 1 1");
     assert(p1.white == 0);
@@ -36,6 +37,8 @@ void test_slides() {
     for (int i = 0; i < 6; i++) assert(SLIDES_LENGHT[SLIDES_INDEX[i]] == 1);
 }
 
+// TODO: test placements
+// TODO: share data between tests
 int main() {
     test_tps();
     test_slides();
