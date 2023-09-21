@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 
-#define SLIDES_MAX_LENGTH 8
-#define SLIDES_AMOUNT 503
+#define SLIDES_AMOUNT 509
+#define INDICES_AMOUNT 8
 
 // length of each slide
 extern const uint8_t SLIDES_LENGHT[SLIDES_AMOUNT];
@@ -17,8 +17,8 @@ inline uint8_t slides_count(uint8_t h) { return h < 8 ? 1 << (h) : (1 << h) - 1;
 // return the index of the first branch of a given height
 // indeces are manually located in the file, or can be computed
 // with the python script
-extern const uint8_t SLIDES_INDEX[6];
-inline uint8_t slides_index(uint8_t h) { return SLIDES_INDEX[h - 3]; }
+extern const uint8_t SLIDES_INDEX[INDICES_AMOUNT];
+inline uint8_t slides_index(uint8_t h) { return SLIDES_INDEX[h - 1]; }
 
 // return the nth element of a slide (n := 0..SLIDES_LENGTH)
 inline uint8_t slide_n(uint32_t slide, uint8_t n) { return (slide >> (4 * n)) & 0xf; }

@@ -1,7 +1,6 @@
 #include "tps.h"
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "position.h"
 
@@ -95,6 +94,26 @@ Position tps2p(char *tps) {
     p.black = rotate(p.black, p.size) >> shift;
     p.caps = rotate(p.caps, p.size) >> shift;
     p.walls = rotate(p.walls, p.size) >> shift;
+
+    // thus i nees to rotate the heights and stacks as well
+    // TODO: maybe now it's better to do this in the read loop
+    //       with some index messing...
+    uint8_t th, d;
+    uint64_t ts;
+    for (int i = 0; i < p.size * (p.size / 2); i++) {
+        // cell displacement simmetry
+        d = p.size * (p.size - i / p.size * 2 - 1);
+
+        // swap heights
+        th = p.heights[i];
+        p.heights[i] = p.heights[i + d];
+        p.heights[i + d] = th;
+
+        // swap stacks
+        ts = p.stacks[i];
+        p.stacks[i] = p.stacks[i + d];
+        p.heights[i + d] = ts;
+    }
 
     // setup remaining pieces, given the board size
     p.reserve[0][0] = SETUP[p.size - 3][0] - flats[0];

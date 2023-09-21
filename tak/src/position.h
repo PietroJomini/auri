@@ -3,9 +3,9 @@
 
 typedef enum {
     // piece type
-    Flat = 0,
-    Cap = 1,
-    Wall = 2,
+    Flat = 1,
+    Cap = 2,
+    Wall = 3,
 
     // color of the piece
     White = 4,

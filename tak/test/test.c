@@ -6,6 +6,7 @@
 
 // TODO: more manually crafted test positions
 // TODO: test stacks
+// TODO: test heights
 // TODO: test remaining pieces
 void test_tps() {
     Position p1 = tps2p("x5/x5/x5/x5/x5 1 1");
@@ -38,6 +39,7 @@ void test_slides() {
 }
 
 // TODO: test placements
+// TODO: test slides
 // TODO: share data between tests
 int main() {
     test_tps();

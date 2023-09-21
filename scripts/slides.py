@@ -86,7 +86,7 @@ def gen(h: int) -> List[int]:
 
 # generate .c file
 def gen_c():
-    branches = list(chain(*map(gen, range(3, 9))))
+    branches = list(chain(*map(gen, range(1, 9))))
     lengths = list(map(len, branches))
     indices = [i for i, n in enumerate(lengths) if n == 1]
     branches = map(intify, branches)
@@ -100,9 +100,12 @@ def gen_c():
     print('#include "slides.h"')
     print("#include <stdint.h>")
     print("")
-    print(f"const uint8_t SLIDES_INDEX[6] = {cjoin(indices)};")
+    print(f"// INDICES_AMOUNT = {len(indices)}")
+    print(f"const uint8_t SLIDES_INDEX[INDICES_AMOUNT] = {cjoin(indices)};")
+    print()
+    print(f"// SLIDES_AMOUNT = {len(lengths)}")
     print(f"const uint8_t SLIDES_LENGHT[SLIDES_AMOUNT] = {cjoin(lengths)};")
-    print(f"const uint8_t SLIDES[SLIDES_AMOUNT] = {cjoin(branches)};")
+    print(f"const uint32_t SLIDES[SLIDES_AMOUNT] = {cjoin(map(hex, branches))};")
 
 
 if __name__ == "__main__":
