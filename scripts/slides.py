@@ -64,6 +64,17 @@ def stacks(h: int, n: int) -> List[int]:
     return stack
 
 
+# transform a stack to a int32, where
+#   s = [a, b, c, d, e, f, g, h]
+#   i = 0x hgfedcba
+def intify(s: List[int]) -> int:
+    i = 0
+    for h in reversed(s):
+        i |= h
+        i <<= 4
+    return i >> 4
+
+
 # generate all possible slides with h stones
 def gen(h: int) -> List[int]:
     branches = [list(stacks(h, n)) for n in range(2 ** (h - 1))]
@@ -73,18 +84,13 @@ def gen(h: int) -> List[int]:
     return branches
 
 
-if __name__ == "__main__":
+# generate .c file
+def gen_c():
     branches = list(chain(*map(gen, range(3, 9))))
     lengths = list(map(len, branches))
-    indices = []
-
-    # find the indices
-    for i, b in enumerate(branches):
-        if len(b) == 1:
-            indices.append(i)
-
+    indices = [i for i, n in enumerate(lengths) if n == 1]
+    branches = map(intify, branches)
     cjoin = lambda l: "{" + ", ".join(map(str, l)) + "}"
-    branches = cjoin(map(cjoin, branches))
 
     print("// clang-format off")
     print("")
@@ -96,4 +102,8 @@ if __name__ == "__main__":
     print("")
     print(f"const uint8_t SLIDES_INDEX[6] = {cjoin(indices)};")
     print(f"const uint8_t SLIDES_LENGHT[SLIDES_AMOUNT] = {cjoin(lengths)};")
-    print(f"const uint8_t SLIDES[SLIDES_AMOUNT][SLIDES_MAX_LENGTH] = {branches};")
+    print(f"const uint8_t SLIDES[SLIDES_AMOUNT] = {cjoin(branches)};")
+
+
+if __name__ == "__main__":
+    gen_c()
