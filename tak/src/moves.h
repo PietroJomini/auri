@@ -13,8 +13,13 @@ typedef struct {
 uint8_t placements_count(Position p);
 
 // compute the possible placements in the given position
-// `buffer` should be at least `placements_count(p)` long
-void placements(Placement *buffer, Position p);
+// `buffer` should be at least `placements_count(p)` long.
+// returns the amount of placements found
+int placements(Placement *buffer, Position p);
+
+// apply a Placement to a Position.
+// it presupposes that the placement is legal
+Position do_placement(Position p, Placement pl);
 
 typedef enum { North, East, South, West } Direction;
 
@@ -43,3 +48,7 @@ int slides_at(Slide *buffer, Position p, uint8_t origin);
 // compute all possible slides in the five position.
 // returns the amount of slides found
 int slides(Slide *buffer, Position p);
+
+// apply a Slide to a Position
+// presuppones that the slide is legal
+Position do_slide(Position p, Slide s);

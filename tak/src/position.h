@@ -12,6 +12,8 @@ typedef enum {
     Black = 8
 } Piece;
 
+typedef enum { PType = 0b11, PColor = 0b1100 } PieceMask;
+
 // amount of pieces per board size
 extern const uint8_t SETUP[6][2];
 
@@ -27,7 +29,8 @@ typedef struct {
     uint64_t walls;
 
     // stacks
-    uint64_t stacks[64];
+    uint64_t stacks[64];  // stacks are ordered with the higest piece in the less
+                          // significant bit
     uint8_t heights[64];
 
     // remaining pieces

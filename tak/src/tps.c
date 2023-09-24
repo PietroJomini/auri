@@ -26,7 +26,7 @@ Position tps2p(char *tps) {
             if (jumping) jumping = value;
             else {
                 // update stacks
-                p.stacks[index] |= (value - 1) << p.heights[index];
+                p.stacks[index] = (p.stacks[index] << 1) | (value - 1);
                 p.heights[index] += 1;
 
                 // update wb bitboards

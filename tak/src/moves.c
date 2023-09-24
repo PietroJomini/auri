@@ -12,7 +12,7 @@ uint8_t placements_count(Position p) {
 }
 
 // TODO: is it better to allocate the buffer here?
-void placements(Placement *buffer, Position p) {
+int placements(Placement *buffer, Position p) {
     int color = p.stp ? Black : White;
     int k = 0;
 
@@ -30,6 +30,28 @@ void placements(Placement *buffer, Position p) {
             }
         }
     }
+
+    return k;
+}
+
+Position do_placement(Position p, Placement pl) {
+    // update stack
+    // is `p.stacks[pl.at] = (pl.piece & Color) >> 2;` faster?
+    if ((pl.piece & PColor) == Black) p.stacks[pl.at] = 1;
+
+    // update height
+    p.heights[pl.at] = 1;
+
+    // update color bitmaps
+    uint64_t sq = 1ull << pl.at;
+    uint64_t *bb = pl.piece & Black ? &p.black : &p.white;
+    *bb |= sq;
+
+    // update modifiers bitmaps
+    if ((pl.piece & PType) == Wall) p.walls |= sq;
+    if ((pl.piece & PType) == Cap) p.caps |= sq;
+
+    return p;
 }
 
 int8_t walk(uint8_t origin, Direction dir, uint8_t size) {
@@ -96,4 +118,65 @@ int slides(Slide *buffer, Position p) {
     for (int i = 0; i < p.size * p.size; i++)
         if ((1ull << i) & bb) n += slides_at(buffer + n, p, i);
     return n;
+}
+
+Position do_slide(Position p, Slide s) {
+    // last cell of the slide
+    int target = s.origin + (s.length - 1) * (s.direction == East    ? 1
+                                              : s.direction == South ? -p.size
+                                              : s.direction == West  ? -1
+                                                                     : p.size);
+
+    // update modifiers
+    uint64_t os = 1ull << s.origin, ts = 1ull << target;
+    if (p.caps & os) p.caps = (p.caps & ~os) | ts;
+    if (p.walls & os) p.walls = (p.walls & ~os) | ts;
+    if (s.flattens) p.walls &= ~ts;
+
+    // compute the direction opposite to the slide
+    Direction od = s.direction == East    ? West
+                   : s.direction == South ? North
+                   : s.direction == West  ? East
+                                          : South;
+
+    int i = 0;
+    while (target != s.origin) {
+        int h = slide_n(s.stacks, s.length - i - 1);
+
+        // update target stack
+        // TODO: here on 8x8 it can overflow, check and avoid
+        p.stacks[target] <<= h;
+        p.stacks[target] |= p.stacks[s.origin] & ((1ull << h) - 1);
+
+        // update origin stack
+        p.stacks[s.origin] >>= h;
+
+        // update heights
+        p.heights[target] += h;
+        p.heights[s.origin] -= h;
+
+        // update target color
+        uint64_t ts = 1ull << target;
+        uint64_t *cbb = p.stacks[target] & 1 ? &p.black : &p.white;
+        uint64_t *obb = p.stacks[target] & 1 ? &p.white : &p.black;
+        *cbb |= ts;
+        *obb &= ~ts;
+
+        // walk target
+        target = walk(target, od, p.size);
+        i++;
+    }
+
+    // update the origin color
+    if (p.heights[s.origin] == 0) {
+        p.white &= ~os;
+        p.black &= ~os;
+    } else {
+        uint64_t *cbb = p.stacks[s.origin] & 1 ? &p.black : &p.white;
+        uint64_t *obb = p.stacks[s.origin] & 1 ? &p.white : &p.black;
+        *cbb |= os;
+        *obb &= ~os;
+    }
+
+    return p;
 }

@@ -32,14 +32,32 @@
     - [x] board representation
     - [x] tps
   - [ ] 1.2
-    - [ ] moves
-      - [ ] slides
+    - [x] moves
+      - [x] slides
         - [x] generate slides
-        - [ ] filter allowed slides
+        - [x] filter allowed slides
       - [x] placements
+      - [x] do moves
+      - [ ] perft
     - [ ] game endings
 - [ ] 2 interfaces
   - [ ] ptn
+  - [ ] cli
+    - [ ] dump position
+    - [ ] list moves
+    - [ ] do moves
+    - [ ] undo moves (implement a "game" entity, with history? and maybe stuff like comments?)
 - [ ] 3 engines
   - [ ] engine
   - [ ] engines tournament
+
+next todos
+- [x] do moves
+- [ ] ptn to, from
+- [ ] position to tps
+- [ ] adjust the tps loading
+- [ ] test
+
+future todos
+- [ ] benchmark a undo function vs using passing by value
+      to clone the position
