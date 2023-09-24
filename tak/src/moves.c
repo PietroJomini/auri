@@ -89,3 +89,11 @@ int slides_at(Slide *buffer, Position p, uint8_t origin) {
     n += slides_atdir(buffer + n, p, origin, West);
     return n;
 }
+
+int slides(Slide *buffer, Position p) {
+    uint64_t bb = p.stp ? p.black : p.white;
+    int n = 0;
+    for (int i = 0; i < p.size * p.size; i++)
+        if ((1ull << i) & bb) n += slides_at(buffer + n, p, i);
+    return n;
+}

@@ -39,3 +39,7 @@ int slides_atdir(Slide *buffer, Position p, uint8_t origin, Direction dir);
 // at a certain square.
 // returns the amount of slides found
 int slides_at(Slide *buffer, Position p, uint8_t origin);
+
+// compute all possible slides in the five position.
+// returns the amount of slides found
+int slides(Slide *buffer, Position p);

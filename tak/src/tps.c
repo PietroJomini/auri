@@ -112,7 +112,7 @@ Position tps2p(char *tps) {
         // swap stacks
         ts = p.stacks[i];
         p.stacks[i] = p.stacks[i + d];
-        p.heights[i + d] = ts;
+        p.stacks[i + d] = ts;
     }
 
     // setup remaining pieces, given the board size
