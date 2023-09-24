@@ -87,8 +87,10 @@ def gen(h: int) -> List[int]:
 # generate .c file
 def gen_c():
     branches = list(chain(*map(gen, range(1, 9))))
+    indices = [i for i, n in enumerate(branches) if len(n) == 1]
+    indices = [n - i for i, n in enumerate(indices)]
+    branches = list(filter(lambda b: len(b) > 1, branches))
     lengths = list(map(len, branches))
-    indices = [i for i, n in enumerate(lengths) if n == 1]
     branches = map(intify, branches)
     cjoin = lambda l: "{" + ", ".join(map(str, l)) + "}"
 
