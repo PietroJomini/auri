@@ -8,7 +8,9 @@ dummy debug utils, supposed to be removed in the future
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "moves.h"
 #include "position.h"
+#include "ptn.h"
 
 // pretty print a bitboard
 void ppbb(uint64_t bb, uint8_t size) {
@@ -102,6 +104,33 @@ void ppp(Position p) {
     }
 
     printf("\n");
+}
+
+// perft divide
+void perftd(Position p, int depth) {
+    Placement pb[196];
+    Slide sb[200];
+
+    int np = placements(pb, p);
+    int ns = slides(sb, p);
+    int nodes = 0;
+    char ptn[MAX_PTN_MOVE_S];
+
+    for (int i = 0; i < np; i++) {
+        int dnodes = perft(do_placement(p, pb[i]), depth - 1);
+        placement2ptn(ptn, pb[i], p);
+        printf("%s %d\n", ptn, dnodes);
+        nodes += dnodes;
+    }
+
+    for (int i = 0; i < ns; i++) {
+        int dnodes = perft(do_slide(p, sb[i]), depth - 1);
+        slide2ptn(ptn, sb[i], p);
+        printf("%s %d\n", ptn, dnodes);
+        nodes += dnodes;
+    }
+
+    printf("%d\n", nodes);
 }
 
 // bits string to long

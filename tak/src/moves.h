@@ -52,3 +52,7 @@ int slides(Slide *buffer, Position p);
 // apply a Slide to a Position
 // presuppones that the slide is legal
 Position do_slide(Position p, Slide s);
+
+// bulk perft
+// https://www.chessprogramming.org/Perft
+uint64_t perft(Position p, int depth);

@@ -38,7 +38,7 @@
         - [x] filter allowed slides
       - [x] placements
       - [x] do moves
-      - [ ] perft
+      - [x] perft
     - [ ] game endings
 - [ ] 2 interfaces
   - [ ] ptn
@@ -53,7 +53,11 @@
 
 next todos
 - [x] do moves
-- [ ] ptn to, from
+- [x] perft
+- [ ] generate test data with other engines
+- [ ] game endings
+- [x] ptn to
+- [ ] ptn from
 - [ ] position to tps
 - [ ] adjust the tps loading
 - [ ] test

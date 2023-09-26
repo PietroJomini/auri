@@ -180,3 +180,24 @@ Position do_slide(Position p, Slide s) {
 
     return p;
 }
+
+uint64_t perft(Position p, int depth) {
+    if (depth == 0) return 1;
+    uint64_t nodes = 0;
+
+    // load moves
+    // TODO: while placements are capped at 196 (64*3), what is the max amount of slides?
+    Placement pb[196];
+    Slide sb[500];
+
+    int np = placements(pb, p);
+    int ns = slides(sb, p);
+
+    // bulk perft
+    if (depth == 1) return np + ns;
+
+    for (int i = 0; i < np; i++) nodes += perft(do_placement(p, pb[i]), depth - 1);
+    for (int i = 0; i < ns; i++) nodes += perft(do_slide(p, sb[i]), depth - 1);
+
+    return nodes;
+}

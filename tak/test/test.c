@@ -36,6 +36,7 @@ void test_tps() {
 // TODO: test placements (do)
 // TODO: test slides (do)
 // TODO: share data between tests
+// TODO: test ptn
 int main() {
     test_tps();
     return 0;
