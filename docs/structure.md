@@ -27,11 +27,11 @@
     - fork ptn.ninja to work with tei
     - tei
 
-- [ ] 1 tak
+- [x] 1 tak
   - [x] 1.1
     - [x] board representation
     - [x] tps
-  - [ ] 1.2
+  - [x] 1.2
     - [x] moves
       - [x] slides
         - [x] generate slides
@@ -39,7 +39,7 @@
       - [x] placements
       - [x] do moves
       - [x] perft
-    - [ ] game endings
+    - [x] game endings
 - [ ] 2 interfaces
   - [ ] ptn
   - [ ] cli
@@ -55,8 +55,9 @@ next todos
 - [x] do moves
 - [x] perft
 - [ ] generate test data with other engines
-- [ ] game endings
+- [x] game endings
 - [x] ptn to
+- [ ] ptn moves shouldn't include the stones dropped on the origin square 
 - [ ] ptn from
 - [ ] position to tps
 - [ ] adjust the tps loading

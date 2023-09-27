@@ -1,5 +1,9 @@
 #include "position.h"
 
+#include <stdint.h>
+
+#include "moves.h"
+
 // amount of pieces per board size
 const uint8_t SETUP[6][2] = {{10, 0}, {15, 0}, {21, 1}, {30, 1}, {40, 2}, {50, 2}};
 
@@ -47,4 +51,64 @@ uint64_t rotate(uint64_t bb, int n) {
         bb >>= n;
     }
     return rb;
+}
+
+uint8_t _has_road_r(Position p, uint8_t origin, uint8_t i, uint64_t *history) {
+    // check and set history
+    if (*history & (1ull << i)) return 0;
+    *history |= 1ull << i;
+
+    // check if the current index links a road
+    if ((origin / p.size == 0 && i / p.size == p.size - 1) ||
+        (origin % p.size == 0 && i % p.size == p.size - 1))
+        return 1;
+
+    // spread neighbours
+    int next_sq, color_check;
+    for (Direction d = North; d <= West; d++) {
+        next_sq = walk(i, d, p.size);
+        color_check = (p.stp ? p.black : p.white) & ~p.walls & 1ull << next_sq;
+        if (next_sq != -1 && color_check && _has_road_r(p, origin, next_sq, history))
+            return 1;
+    }
+
+    return 0;
+}
+
+uint8_t has_road(Position p) {
+    int color_check;
+
+    // vertical roads
+    uint64_t history = 0;
+    for (int i = 0; i < p.size; i++) {
+        color_check = (p.stp ? p.black : p.white) & ~p.walls & 1ull << i;
+        if (color_check && _has_road_r(p, i, i, &history)) return 1;
+    }
+
+    // horizontal roads
+    history = 0;
+    for (int i = 0; i < p.size; i++) {
+        color_check = (p.stp ? p.black : p.white) & ~p.walls & 1ull << i * p.size;
+        if (color_check && _has_road_r(p, i * p.size, i * p.size, &history)) return 1;
+    }
+
+    return 0;
+}
+
+EndStatus check_ending(Position p) {
+    // road endings
+    if (has_road(p))
+        return (EndStatus){.ended = 1, .ending = Road, .winner = p.stp ? Black : White};
+    
+    // reserve engings
+    if (p.reserve[0][0] == 0 && p.reserve[0][1] == 0 ||
+        p.reserve[1][0] == 0 && p.reserve[1][1] == 0) {
+        int popc_w = __builtin_popcount(p.white & ~p.caps & ~p.walls);
+        int popc_b = __builtin_popcount(p.black & ~p.caps & ~p.walls);
+        if (popc_b == popc_w) return (EndStatus){.ended = 1, .ending = Tie};
+        return (EndStatus){
+            .ended = 1, .ending = Flate, .winner = popc_w > popc_b ? White : Black};
+    }
+
+    return (EndStatus){.ended = 0};
 }

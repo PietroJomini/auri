@@ -2,16 +2,12 @@
 #include <stdint.h>
 
 typedef enum {
-    // piece type
     Flat = 1,
     Cap = 2,
     Wall = 3,
-
-    // color of the piece
-    White = 4,
-    Black = 8
 } Piece;
 
+typedef enum { White = 4, Black = 8 } Color;
 typedef enum { PType = 0b11, PColor = 0b1100 } PieceMask;
 
 // amount of pieces per board size
@@ -51,3 +47,18 @@ uint64_t mirror(uint64_t bb);
 // rotate chunks of n bits
 // eg n=3 011 010 101 => 101 010 011
 uint64_t rotate(uint64_t bb, int n);
+
+// end causes
+typedef enum { Road, Flate, Tie } EndType;
+typedef struct {
+    uint8_t ended;
+    EndType ending;
+    Color winner;
+} EndStatus;
+
+// check for roads
+uint8_t has_road(Position p);
+uint8_t _has_road_r(Position p, uint8_t origin, uint8_t i, uint64_t *history);
+
+// check for endings
+EndStatus check_ending(Position p);

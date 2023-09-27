@@ -37,6 +37,7 @@ void test_tps() {
 // TODO: test slides (do)
 // TODO: share data between tests
 // TODO: test ptn
+// TODO: test game endings
 int main() {
     test_tps();
     return 0;
