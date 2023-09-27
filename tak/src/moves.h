@@ -9,11 +9,7 @@ typedef struct {
     uint8_t at;
 } Placement;
 
-// counts the empty spaces in the board
-uint8_t placements_count(Position p);
-
-// compute the possible placements in the given position
-// `buffer` should be at least `placements_count(p)` long.
+// compute the possible placements in the given position.
 // returns the amount of placements found
 int placements(Placement *buffer, Position p);
 

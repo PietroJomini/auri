@@ -5,27 +5,24 @@
 #include "position.h"
 #include "slides.h"
 
-uint8_t placements_count(Position p) {
-    int kinds = (p.reserve[p.stp][0] ? 2 : 0) + (p.reserve[p.stp][1] ? 1 : 0);
-    int spaces = p.size * p.size - __builtin_popcount(p.white | p.black);
-    return kinds * spaces;
-}
-
-// TODO: is it better to allocate the buffer here?
 int placements(Placement *buffer, Position p) {
-    int color = p.stp ? Black : White;
-    int k = 0;
+    // swap rule
+    int stp = p.mc < 2 ? 1 - p.stp : p.stp;
+    int color  = p.stp ? Black : White;
 
+    int k = 0;
     for (int i = 0; i < p.size * p.size; i++) {
         // check if the cell is empty
         if (((1ull << i) & (p.white | p.black)) == 0) {
-            if (p.reserve[p.stp][0]) {
-                // flats + walls
+            if (p.reserve[stp][0]) {
+                // flats
                 buffer[k++] = (Placement){.at = i, .piece = color | Flat};
-                buffer[k++] = (Placement){.at = i, .piece = color | Wall};
+
+                // walls. can be placed only after the second turn
+                if (p.mc >= 2) buffer[k++] = (Placement){.at = i, .piece = color | Wall};
             }
-            if (p.reserve[p.stp][1]) {
-                // caps
+            if (p.mc >= 2 && p.reserve[stp][1]) {
+                // caps. can be placed only after the second turn
                 buffer[k++] = (Placement){.at = i, .piece = color | Cap};
             }
         }
@@ -50,6 +47,13 @@ Position do_placement(Position p, Placement pl) {
     // update modifiers bitmaps
     if ((pl.piece & PType) == Wall) p.walls |= sq;
     if ((pl.piece & PType) == Cap) p.caps |= sq;
+
+    // update reserve
+    p.reserve[p.stp][(pl.piece & PType) == Cap] -= 1;
+
+    // update move count
+    p.mc++;
+    p.stp = 1 - p.stp;
 
     return p;
 }
@@ -113,6 +117,10 @@ int slides_at(Slide *buffer, Position p, uint8_t origin) {
 }
 
 int slides(Slide *buffer, Position p) {
+    // the first two moves can only be placements.
+    // TODO: should this be in slides_atdir()?
+    if (p.mc < 2) return 0;
+
     uint64_t bb = p.stp ? p.black : p.white;
     int n = 0;
     for (int i = 0; i < p.size * p.size; i++)
@@ -178,12 +186,21 @@ Position do_slide(Position p, Slide s) {
         *obb &= ~os;
     }
 
+    // update move count
+    p.mc++;
+    p.stp = 1 - p.stp;
+
     return p;
 }
 
 uint64_t perft(Position p, int depth) {
     if (depth == 0) return 1;
     uint64_t nodes = 0;
+
+    // ended game check
+    // TODO: maybe this should be in the moves generation?
+    EndStatus status = check_ending(p);
+    if (status.ended) return 1;
 
     // load moves
     // TODO: while placements are capped at 196 (64*3), what is the max amount of slides?

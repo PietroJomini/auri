@@ -99,10 +99,10 @@ EndStatus check_ending(Position p) {
     // road endings
     if (has_road(p))
         return (EndStatus){.ended = 1, .ending = Road, .winner = p.stp ? Black : White};
-    
+
     // reserve engings
-    if (p.reserve[0][0] == 0 && p.reserve[0][1] == 0 ||
-        p.reserve[1][0] == 0 && p.reserve[1][1] == 0) {
+    if ((p.reserve[0][0] == 0 && p.reserve[0][1] == 0) ||
+        (p.reserve[1][0] == 0 && p.reserve[1][1] == 0)) {
         int popc_w = __builtin_popcount(p.white & ~p.caps & ~p.walls);
         int popc_b = __builtin_popcount(p.black & ~p.caps & ~p.walls);
         if (popc_b == popc_w) return (EndStatus){.ended = 1, .ending = Tie};
