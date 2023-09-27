@@ -1,5 +1,13 @@
-# c bin out
+# c stuff
 build
-
-# c dev entrypoint
 dev
+
+# other engines
+engines
+
+# rust stuff
+Cargo.lock
+target
+
+# jupyter stuff
+.ipynb_checkpoints

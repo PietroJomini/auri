@@ -16,7 +16,6 @@ build:
 	$(CC) -o $(OUT)/$(NAME) $(DEV_SRC) $(SRC) $(CFLAGS)
 
 run: build
-
 	$(OUT)/$(NAME)
 
 clean:
