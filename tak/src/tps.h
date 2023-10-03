@@ -26,3 +26,7 @@ known identifiers:
 
 // Parse a tps string into a new position
 Position tps2p(char *tps);
+
+// TODO: what is the max length of a tps string? (required buffer length)
+// Encode a position as tps
+int p2tps(char *buffer, Position p);

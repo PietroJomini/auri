@@ -1,5 +1,6 @@
 #include "tps.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "position.h"
@@ -122,4 +123,59 @@ Position tps2p(char *tps) {
     p.reserve[1][1] = SETUP[p.size - 3][1] - caps[1];
 
     return p;
+}
+
+// TODO: this is ugly, refactor
+int p2tps(char *buffer, Position p) {
+    int k = 0;
+
+    // stacks
+    int jumping = 0;
+    for (int row = p.size - 1; row >= 0; row--) {
+        for (int column = 0; column < p.size; column++) {
+            int index = row * p.size + column;
+            if (p.heights[index] == 0) jumping += 1;
+            else {
+                // handle previous jumps
+                if (jumping) {
+                    buffer[k++] = 'x';
+                    if (jumping > 1) buffer[k++] = '0' + jumping;
+                    jumping = 0;
+                }
+
+                // cell separator
+                if (column > 0) buffer[k++] = ',';
+
+                // append stack
+                for (int h = p.heights[index] - 1; h >= 0; h--) {
+                    buffer[k++] = '1' + !!(p.stacks[index] & 1 << h);
+                }
+
+                // modifiers
+                uint64_t sq = 1ull << index;
+                if (sq & p.walls) buffer[k++] = 'S';
+                if (sq & p.caps) buffer[k++] = 'C';
+            }
+        }
+
+        // handle previous jumps
+        if (jumping) {
+            // if we jump for less than ths full row, we can be sure that there
+            // were cells previously, so we need the separator
+            if (jumping < p.size) buffer[k++] = ',';
+
+            buffer[k++] = 'x';
+            if (jumping > 1) buffer[k++] = '0' + jumping;
+            jumping = 0;
+        }
+
+        buffer[k++] = '/';
+    }
+
+    // move stp, count
+    // TODO: handle errors (-1)
+    k += sprintf(buffer + k - 1, " %d %d", p.stp + 1, p.mc + 1);
+
+    buffer[k++] = '\0';
+    return k;
 }

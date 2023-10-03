@@ -8,7 +8,7 @@
 int placements(Placement *buffer, Position p) {
     // swap rule
     int stp = p.mc < 2 ? 1 - p.stp : p.stp;
-    int color  = p.stp ? Black : White;
+    int color = p.stp ? Black : White;
 
     int k = 0;
     for (int i = 0; i < p.size * p.size; i++) {
@@ -41,7 +41,7 @@ Position do_placement(Position p, Placement pl) {
 
     // update color bitmaps
     uint64_t sq = 1ull << pl.at;
-    uint64_t *bb = pl.piece & Black ? &p.black : &p.white;
+    uint64_t *bb = (pl.piece & Black) ? &p.black : &p.white;
     *bb |= sq;
 
     // update modifiers bitmaps
@@ -191,6 +191,11 @@ Position do_slide(Position p, Slide s) {
     p.stp = 1 - p.stp;
 
     return p;
+}
+
+Position do_move(Position p, Move m) {
+    return (m.type == Slide_t) ? do_slide(p, m.move.slide)
+                               : do_placement(p, m.move.placement);
 }
 
 uint64_t perft(Position p, int depth) {

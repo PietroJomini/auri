@@ -52,3 +52,18 @@ Position do_slide(Position p, Slide s);
 // bulk perft
 // https://www.chessprogramming.org/Perft
 uint64_t perft(Position p, int depth);
+
+// move union
+typedef enum { Placement_t, Slide_t } Move_t;
+typedef union {
+    Placement placement;
+    Slide slide;
+} Move_u;
+
+typedef struct {
+    Move_t type;
+    Move_u move;
+} Move;
+
+// generic combination of `do_slide' and `do_placement`
+Position do_move(Position p, Move m);

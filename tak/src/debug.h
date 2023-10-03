@@ -118,14 +118,14 @@ void perftd(Position p, int depth) {
 
     for (int i = 0; i < np; i++) {
         int dnodes = perft(do_placement(p, pb[i]), depth - 1);
-        placement2ptn(ptn, pb[i], p);
+        placement2ptn(ptn, pb[i], p.size);
         printf("%s %d\n", ptn, dnodes);
         nodes += dnodes;
     }
 
     for (int i = 0; i < ns; i++) {
         int dnodes = perft(do_slide(p, sb[i]), depth - 1);
-        slide2ptn(ptn, sb[i], p);
+        slide2ptn(ptn, sb[i], p.size);
         printf("%s %d\n", ptn, dnodes);
         nodes += dnodes;
     }

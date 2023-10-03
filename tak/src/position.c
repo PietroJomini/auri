@@ -18,6 +18,18 @@ Position pempty() {
                       .reserve = {{0, 0}, {0, 0}}};
 }
 
+Position pempty_s(uint8_t size) {
+    return (Position){.size = size,
+                      .stp = 0,
+                      .mc = 0,
+                      .white = 0,
+                      .black = 0,
+                      .walls = 0,
+                      .caps = 0,
+                      .reserve = {{SETUP[size - 3][0], SETUP[size - 3][1]},
+                                  {SETUP[size - 3][0], SETUP[size - 3][1]}}};
+}
+
 // adaptation http://graphics.stanford.edu/~seander/bithacks.html
 // if this ends up becoming too slow we can use a byte-level lookup table
 // to swap bytes internally and then swap endiannes with assembly,

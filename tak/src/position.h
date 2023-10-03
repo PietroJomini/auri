@@ -36,6 +36,7 @@ typedef struct {
 
 // create a new, empty position
 Position pempty();
+Position pempty_s(uint8_t size);
 
 // bitboard of a square
 inline uint64_t SQ(int index) { return 1ULL << index; }
