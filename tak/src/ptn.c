@@ -71,7 +71,7 @@ Move playtak2move(char *src, Position p) {
         m.move.placement.piece = (modifier == 'C'   ? Cap
                                   : modifier == 'W' ? Wall
                                                     : Flat) |
-                                 (p.stp ? Black : White);
+                                 ((p.mc < 2 ? 1 - p.stp : p.stp) ? Black : White);
         m.type = Placement_t;
         return m;
     }

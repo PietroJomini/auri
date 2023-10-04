@@ -11,6 +11,7 @@ dummy debug utils, supposed to be removed in the future
 #include "moves.h"
 #include "position.h"
 #include "ptn.h"
+#include "tps.h"
 
 // pretty print a bitboard
 void ppbb(uint64_t bb, uint8_t size) {
@@ -26,6 +27,11 @@ void ppbb(uint64_t bb, uint8_t size) {
 
 // pretty print position
 void ppp(Position p) {
+    // tps
+    char tps[100];
+    p2tps(tps, p);
+    printf("Position %s\n", tps);
+
     // top border
     if (p.size > 3) {
         printf("  ┌─colors");
@@ -104,6 +110,13 @@ void ppp(Position p) {
     }
 
     printf("\n");
+}
+
+// pretty print move
+void ppm(Move m, uint8_t size) {
+    char ptn[MAX_PTN_MOVE];
+    move2ptn(ptn, m, size);
+    printf("%s\n", ptn);
 }
 
 // perft divide

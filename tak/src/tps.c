@@ -71,7 +71,7 @@ Position tps2p(char *tps) {
 
     // turn identifier + move counter
     p.stp = strtol(tps, &tps, 10) - 1;
-    p.mc = strtol(tps, NULL, 10) - 1;
+    p.mc = (strtol(tps, NULL, 10) - 1) / 2;
 
     // in the std format rows are listed from the "top" one,
     // but it makes sense to let the indexes start from the
@@ -126,6 +126,7 @@ Position tps2p(char *tps) {
 }
 
 // TODO: this is ugly, refactor
+// TODO: move count and std is still broken for ended position, i think
 int p2tps(char *buffer, Position p) {
     int k = 0;
 
@@ -138,6 +139,7 @@ int p2tps(char *buffer, Position p) {
             else {
                 // handle previous jumps
                 if (jumping) {
+                    if (buffer[k - 1] != '/') buffer[k++] = ',';
                     buffer[k++] = 'x';
                     if (jumping > 1) buffer[k++] = '0' + jumping;
                     jumping = 0;
@@ -174,7 +176,7 @@ int p2tps(char *buffer, Position p) {
 
     // move stp, count
     // TODO: handle errors (-1)
-    k += sprintf(buffer + k - 1, " %d %d", p.stp + 1, p.mc + 1);
+    k += sprintf(buffer + k - 1, " %d %d", p.stp + 1, p.mc / 2 + 1);
 
     buffer[k++] = '\0';
     return k;
