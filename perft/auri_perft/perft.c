@@ -3,13 +3,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include "../../tak/src/auri.h"
 
 void handle_line(char *tps, int upto) {
     Position p = tps2p(tps);
-    printf("\"%s\"", tps);
-    for (int i = 1; i <= upto; i++) printf(", %ld", perft(p, i));
+    struct timeval before, after, epoch;
+    printf("%s", tps);
+
+    for (int i = 1; i <= upto; i++) {
+        gettimeofday(&before, NULL);
+        uint64_t depth = perft(p, i);
+        gettimeofday(&after, NULL);
+        timersub(&after, &before, &epoch);
+        printf(", %ld, %ld", depth, epoch.tv_sec * 1000000 + epoch.tv_usec);
+    }
+
     printf("\n");
 }
 
