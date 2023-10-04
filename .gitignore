@@ -11,3 +11,6 @@ target
 
 # jupyter stuff
 .ipynb_checkpoints
+
+# bulk data
+data/games.db

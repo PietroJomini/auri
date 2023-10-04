@@ -41,7 +41,13 @@
       - [x] perft
     - [x] game endings
 - [ ] 2 interfaces
+  - [x] playtak moveset format
+    - [x] load to position
   - [ ] ptn
+    - [x] moves to
+    - [ ] moves from
+    - [ ] game to
+    - [ ] game from
   - [ ] cli
     - [ ] dump position
     - [ ] list moves
@@ -54,14 +60,15 @@
 next todos
 - [x] do moves
 - [x] perft
-- [ ] generate test data with other engines
+- [x] generate test data with other engines
+- [x] load test data from playtak
 - [x] game endings
 - [x] ptn to
 - [ ] ptn moves shouldn't include the stones dropped on the origin square 
 - [ ] ptn from
-- [ ] position to tps
-- [ ] adjust the tps loading
+- [x] position to tps
 - [ ] test
+- [ ] cleanup
 
 future todos
 - [ ] benchmark a undo function vs using passing by value

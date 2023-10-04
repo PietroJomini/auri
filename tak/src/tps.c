@@ -139,7 +139,7 @@ int p2tps(char *buffer, Position p) {
             else {
                 // handle previous jumps
                 if (jumping) {
-                    if (buffer[k - 1] != '/') buffer[k++] = ',';
+                    if (buffer[k - 1] != '/' && k > 0) buffer[k++] = ',';
                     buffer[k++] = 'x';
                     if (jumping > 1) buffer[k++] = '0' + jumping;
                     jumping = 0;
