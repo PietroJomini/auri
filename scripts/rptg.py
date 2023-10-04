@@ -8,14 +8,15 @@ import subprocess
 import csv
 import random
 import io
+import sys
 
 
-def load_sql() -> str:
+def load_sql(limit: int) -> str:
     with open("scripts/rptg.sql") as sql:
         return (
             subprocess.run(
                 ["sqlite3", "data/games.db"],
-                input=sql.read().encode(),
+                input=sql.read().replace("__LIMIT__", str(limit)).encode(),
                 capture_output=True,
             )
             .stdout.decode()
@@ -30,7 +31,7 @@ def cut_notation(notation: str):
 
 
 if __name__ == "__main__":
-    raw = load_sql()
+    raw = load_sql(100 if len(sys.argv) == 1 else int(sys.argv[1]))
     reader = csv.DictReader(raw.split("\n"))
 
     # write trimmed csv

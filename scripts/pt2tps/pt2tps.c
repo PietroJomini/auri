@@ -19,7 +19,7 @@ int main() {
     while (getline(&line, &len, stdin) != -1) {
         sscanf(line, "%d,%d,\"%[A-Z1-9, ]\"", &id, &size, notation);
         pt2tps(tps, notation, size);
-        printf("%d,\"%s\"\n", size, tps);
+        printf("%s\n", tps);
     }
 
     return EXIT_SUCCESS;
