@@ -4,7 +4,8 @@ CFLAGS = -std=c2x -O2
 CFLAGS += -Wextra -Wall -Wpedantic
 
 # dirs
-SRC = $(wildcard ../../tak/src/*.c)
+SRC = $(wildcard ../../tak/src/*.c) $(wildcard ../../tak/src/**/*.c)
+SRC := $(filter-out %_dev.c,$(SRC))
 ENTRY = perft.c
 OUT = build
 NAME = perft

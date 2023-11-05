@@ -66,5 +66,7 @@ tak_endstatus tak_check_ending(tak_position const *p) {
                                .winner = popc_w > popc_b ? TAK_WHITE : TAK_BLACK};
     }
 
+    // TODO: full board
+
     return (tak_endstatus){.ended = 0};
 }

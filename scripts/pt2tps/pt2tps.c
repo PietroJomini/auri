@@ -4,10 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../tak/src/auri.h"
+#include "../../tak/src/notation/playtak.h"
+#include "../../tak/src/notation/tps.h"
+#include "../../tak/src/position.h"
 
 void pt2tps(char *buffer, char *pt, int size) {
-    p2tps(buffer, playtak2position(pt, size));
+    tak_p2tps(buffer, tak_playtak2position(pt, size), TAK_TPS_STD);
 }
 
 int main() {

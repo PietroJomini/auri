@@ -25,6 +25,7 @@ int tak_placement2ptn(char *buffer, tak_placement p, uint8_t size,
     return k;
 }
 
+// TODO: ptn should not include the stones left on the
 int tak_slide2ptn(char *buffer, tak_slide s, uint8_t size, tak_ptn_lexicon lexicon) {
     int k = 0;
 
