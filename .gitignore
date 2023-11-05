@@ -1,6 +1,7 @@
 # c stuff
+bin
 build
-dev
+_dev.*
 
 # other engines
 engines

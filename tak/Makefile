@@ -1,26 +1,48 @@
-# c compiler
+# compiler stuff
 CC = gcc
-CFLAGS = -std=c2x -O
-CFLAGS += -Wextra -Wall -Wpedantic
+CFLAGS = -std=c2x -O3 # -03
+CFLAGS += -Wall -Wextra -Wpedantic
+LFLAGS = # linker flags
+RFLAGS = # run flags
 
 # dirs
-SRC = $(wildcard src/*.c)
-DEV_SRC = $(wildcard dev/*.c)
-OUT = build
 NAME = auri
+BIND = ./bin
+SRCD = ./src
+SRC = $(wildcard $(SRCD)/*.c) $(wildcard $(SRCD)/**/*.c)
+INC = $(wildcard $(SRCD)/*.h) $(wildcard $(SRCD)/**/*.h)
+OBJ = $(SRC:$(SRCD)/%.c=$(BIND)/%.o)
 
-.PHONY: build run clean test
+.PHONY: all buikld run clean cneal-brute
+all: run
 
-build:
-	mkdir -p $(OUT)
-	$(CC) -o $(OUT)/$(NAME) $(DEV_SRC) $(SRC) $(CFLAGS)
+# test suite
+# tests requires criterion https://github.com/Snaipe/Criterion
+test: NAME = test
+test: SRC := $(filter-out %_dev.c,$(SRC))
+test: SRC += test/test.c
+test: LFLAGS += -lcriterion
+test: RFLAGS += -j0
+test: build run
+
+# builds .o files to reduce compilation time
+# as this allow to recompile only certain files
+build: $(OBJ) $(INC)
+	$(CC) $(OBJ) $(LFLAGS) -o $(BIND)/$(NAME)
+
+# generic rule to compile c files
+# to the respective .o
+$(BIND)/%.o: $(SRCD)/%.c $(SRCD)/%.h
+	@mkdir -p -- $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 run: build
-	$(OUT)/$(NAME)
+	@$(BIND)/$(NAME) $(RFLAGS)
 
 clean:
-	rm -rf $(OUT)/*
+	rm $(OBJ) -f
 
-test: test/test.c
-	$(CC) -o build/test test/test.c $(SRC) $(CFLAGS)
-	build/test
+# clean every file in the bin directory,
+# including executable files
+clean-brute:
+	rm $(BIND)/* -rf

@@ -4,66 +4,93 @@
 
 #include "position.h"
 
+// amount of moves for which the swap rule apply
+#define TAK_SWAP_MOVES 2
+
 typedef struct {
-    Piece piece;
+    tak_piece piece;
     uint8_t at;
-} Placement;
+} tak_placement;
 
-// compute the possible placements in the given position.
+// get all possible placements in the given position
 // returns the amount of placements found
-int placements(Placement *buffer, Position p);
+int tak_search_placements(tak_placement *buffer, tak_position const *p);
 
-// apply a Placement to a Position.
-// it presupposes that the placement is legal
-Position do_placement(Position p, Placement pl);
+// apply a placement to a position
+// assumes the placement to be legal
+tak_position tak_do_placement(tak_position p, tak_placement pl);
 
-typedef enum { North, East, South, West } Direction;
-
-// get the next square in a given direction
-// returns -1 if the next square would be off-board
-int8_t walk(uint8_t origin, Direction dir, uint8_t size);
+// amount of precomputed slides in the lookup table
+#define TAK_SLIDESLT_AMOUNT 501
 
 typedef struct {
+    uint8_t indexes[8];                    // indexes of the first slide of height n
+    uint8_t lengths[TAK_SLIDESLT_AMOUNT];  // length of each slide
+    uint32_t slides[TAK_SLIDESLT_AMOUNT];  // drop stacks of each slide
+} tak_slideslt;
+
+// reduce the nth slide with h stones
+uint32_t tak_slt_reduce(int n, int h);
+
+// load the lookup table for the slides
+// TODO: more details in the documentation
+tak_slideslt tak_slt_load();
+
+// direction
+typedef enum { TAK_NORTH, TAK_EAST, TAK_SOUTH, TAK_WEST } tak_direction;
+
+static inline tak_direction tak_opposite_d(tak_direction d) {
+    return d == TAK_EAST    ? TAK_WEST
+           : d == TAK_SOUTH ? TAK_NORTH
+           : d == TAK_WEST  ? TAK_EAST
+                            : TAK_SOUTH;
+}
+
+typedef struct {
+    tak_direction direction;
     uint8_t origin;
-    Direction direction;
     uint8_t length;
     uint32_t stacks;
     uint8_t flattens;
-} Slide;
+} tak_slide;
 
-// compute all possible slides in the given position
-// at a certain square, in the given direction.
+// get the next square in a given direction
+// returns -1 if the next square would be off-board
+int tak_walk(uint8_t origin, tak_direction d, uint8_t size);
+
+// compute all possible slides in the given position,
+// starting from a given square and sliding in the given direction.
 // returns the amount of slides found
-int slides_atdir(Slide *buffer, Position p, uint8_t origin, Direction dir);
+int tak_search_slides_atdir(tak_slide *buffer, tak_position const *p, uint8_t origin,
+                            tak_direction d, tak_slideslt const *slt);
 
-// compute all possible slides in the given position
-// at a certain square.
+// compute all possible slides in the given position, starting from a given square.
 // returns the amount of slides found
-int slides_at(Slide *buffer, Position p, uint8_t origin);
+int tak_search_slides_at(tak_slide *buffer, tak_position const *p, uint8_t origin,
+                         tak_slideslt const *slt);
 
-// compute all possible slides in the five position.
+// compute all possible slides in the given position.
 // returns the amount of slides found
-int slides(Slide *buffer, Position p);
+int tak_search_slides(tak_slide *buffer, tak_position const *p, tak_slideslt const *slt);
 
-// apply a Slide to a Position
-// presuppones that the slide is legal
-Position do_slide(Position p, Slide s);
+// apply a slide to a position
+// assumes the slide to be legal
+tak_position tak_do_slide(tak_position p, tak_slide s);
 
 // bulk perft
-// https://www.chessprogramming.org/Perft
-uint64_t perft(Position p, int depth);
+uint64_t tak_perft(tak_position p, int depth, tak_slideslt const *slt);
 
-// move union
-typedef enum { Placement_t, Slide_t } Move_t;
+// unified moves
+// NOTE: this should be slower, so it's better to use it only for notation
+// and high-level APIs
+typedef enum { TAK_SLIDE, TAK_PLACEMENT } tak_movet;
+
 typedef union {
-    Placement placement;
-    Slide slide;
-} Move_u;
+    tak_placement p;
+    tak_slide s;
+} tak_moveu;
 
 typedef struct {
-    Move_t type;
-    Move_u move;
-} Move;
-
-// generic combination of `do_slide' and `do_placement`
-Position do_move(Position p, Move m);
+    tak_movet t;
+    tak_moveu u;
+} tak_move;
