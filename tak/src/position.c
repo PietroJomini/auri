@@ -1,12 +1,14 @@
 #include "position.h"
 
+#include <limits.h>
 #include <stdint.h>
 
 #include "moves.h"
 
 const uint8_t TAK_RESERVES[6][2] = {{10, 0}, {15, 0}, {21, 1}, {30, 1}, {40, 2}, {50, 2}};
 
-uint8_t _tak_search_road_r(tak_position const *p, uint8_t origin, uint8_t i, uint64_t *history) {
+uint8_t _tak_search_road_r(tak_position const *p, uint8_t origin, uint8_t i,
+                           uint64_t *history) {
     // check and set history
     if (*history & (1ull << i)) return 0;
     *history |= 1ull << i;
@@ -66,7 +68,8 @@ tak_endstatus tak_check_ending(tak_position const *p) {
                                .winner = popc_w > popc_b ? TAK_WHITE : TAK_BLACK};
     }
 
-    // TODO: full board
+    if ((p->cbb[0] | p->cbb[1]) == 0xffffffffffffffff)
+        return (tak_endstatus){.ended = 1, .ending = TAK_TIE};
 
     return (tak_endstatus){.ended = 0};
 }

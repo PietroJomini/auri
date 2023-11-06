@@ -22,7 +22,7 @@
     - [x] routes
     - [x] ties
       - [x] no more pieces
-      - [ ] full board
+      - [x] full board
     - [x] dragon clause
   - [ ] notations
     - [ ] tps
