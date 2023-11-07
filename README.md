@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="resources/auri.webp" alt="auri" height="236"/>
+  <img src="docs/resources/auri.webp" alt="auri" height="236"/>
 </p>
 
 <h1 align="center">auri</h1>
