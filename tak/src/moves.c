@@ -226,6 +226,10 @@ tak_position tak_do_slide(tak_position p, tak_slide s) {
         p.cbb[1 - (p.stacks[s.origin] & 1)] &= ~os;
     }
 
+    // mc, stp
+    p.stp = 1 - p.stp;
+    p.mc += 1;
+
     return p;
 }
 
