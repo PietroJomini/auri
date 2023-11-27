@@ -5,9 +5,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "../tak/src/moves.h"
-#include "../tak/src/notation/tps.h"
-#include "../tak/src/position.h"
+#include "../take4/src/notation.h"
+#include "../take4/src/tak.h"
 
 #define DEPTH_MIN 5
 #define DEPTH_MAX 100
@@ -16,24 +15,17 @@
 
 int randint(int a, int b) { return a + rand() % (b - a + 1); }
 
-tak_position random_position(int size, int depth, tak_slideslt *slt) {
-    tak_position p = tak_new_position(size), np;
-    tak_placement p_buffer[200];
-    tak_slide s_buffer[500];
-    int p_amount, s_amount, n;
+position random_position(int size, int depth, slides_lt *slt) {
+    position p = new_position(size), np;
+    move buffer[500 + PLACEMENTS_MAX_AMOUNT];
+    int t;
 
     while (--depth > 0) {
-        // generate moves
-        p_amount = tak_search_placements(p_buffer, &p);
-        s_amount = tak_search_slides(s_buffer, &p, slt);
-        n = randint(0, p_amount + s_amount - 1);
-
-        // play a random move
-        if (n < p_amount) np = tak_do_placement(p, p_buffer[n]);
-        else np = tak_do_slide(p, s_buffer[n - p_amount]);
+        t = search_moves(buffer, &p, slt);
+        np = do_move(p, buffer[randint(0, t - 1)]);
 
         // check if the game is ended
-        if (tak_check_ending(&np).ended) return p;
+        if (check_ending(&np, 0).ended) return p;
         else p = np;
     }
 
@@ -59,12 +51,12 @@ int main(int argc, char **argv) {
     if (amount < 1) amount = 1;
 
     srand(time(NULL));
-    tak_slideslt slt = tak_slt_load();
-    char tps[TAK_MAX_TPS];
+    slides_lt slt = slt_fill();
+    char tps[TPS_MAX_LENGTH];
 
     for (int i = 0; i < amount; i++) {
-        tak_position p = random_position(size, randint(depth_min, depth_max), &slt);
-        tak_p2tps(tps, p, TAK_TPS_STD);
+        position p = random_position(size, randint(depth_min, depth_max), &slt);
+        position2tps(tps, p, TPS_STD);
         printf("%s\n", tps);
     }
 

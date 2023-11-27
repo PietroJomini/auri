@@ -5,18 +5,17 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "../../tak/src/moves.h"
-#include "../../tak/src/notation/tps.h"
-#include "../../tak/src/position.h"
+#include "../../take4/src/notation.h"
+#include "../../take4/src/tak.h"
 
-void handle_line(char *tps, int upto, tak_slideslt *slt) {
-    tak_position p = tak_tps2p(tps, TAK_TPS_STD);
+void handle_line(char *tps, int upto, slides_lt *slt) {
+    position p = tps2position(tps, TPS_STD);
     struct timeval before, after, epoch;
     printf("%s", tps);
 
     for (int i = 1; i <= upto; i++) {
         gettimeofday(&before, NULL);
-        uint64_t depth = tak_perft(p, i, slt);
+        uint64_t depth = perft(p, i, slt);
         gettimeofday(&after, NULL);
         timersub(&after, &before, &epoch);
         printf(", %ld, %ld", depth, epoch.tv_sec * 1000000 + epoch.tv_usec);
@@ -35,7 +34,7 @@ int main() {
     else perft_upto = atoi(perft_upto_s);
 
     // slt
-    tak_slideslt slt = tak_slt_load();
+    slides_lt slt = slt_fill();
 
     while (getline(&line, &len, stdin) != -1) {
         // remove \n from end

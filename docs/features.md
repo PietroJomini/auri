@@ -1,5 +1,5 @@
 ## Features (aka. todos)
-- [ ] engine
+- [ ] game ruleset (tak)
   - [x] board representation
   - [ ] full game entity
     - [ ] history
@@ -18,33 +18,58 @@
       - [ ] placements
     - [x] perft
     - [x] swap rule
-  - [ ] game endings
+  - [x] game endings
     - [x] routes
     - [x] ties
       - [x] no more pieces
       - [x] full board
     - [x] dragon clause
+    - [x] komi
   - [ ] notations
     - [ ] tps
       - [x] from
       - [x] to
       - [ ] check
     - [ ] ptn
-      - [x] moves to, from
+      - [x] moves to
+      - [ ] moves from
       - [ ] game to, from
     - [x] playtak db
 - [ ] opening db
 - [ ] engine
   - [ ] search
+    - [ ] minimax with alpha-beta pruning
+    - [ ] monte carlo
+    - [ ] threaded
+    - [ ] transposition table
+      - [ ] hash
+      - [ ] rotations
   - [ ] evaluation
     - [ ] hand-made euristic
+      - [ ] distance to road
+        - [ ] find potential roads
+        - [ ] find how many tiles to complete them
+        - [ ] pick the shortest
+      - [ ] capstone influence
+        - [ ] better in the center?
+        - [ ] better when near opponent walls?
+      - [ ] flat-win advantage
     - [ ] alpha0
 - [ ] engines tournament
-- [ ] interfaces
-  - [ ] cli
-  - [ ] channel to ptn.ninja
-    - [ ] fork ptn.ninja to work with tei
+- [ ] cli
+  - [ ] perft
   - [ ] tei
+    - sources
+      - https://github.com/official-stockfish/Stockfish/wiki/UCI-&-Commands#standard-commands
+      - https://github.com/MortenLohne/tiltak/blob/master/README.md
+    - [ ] more than on thread? one for input / control, one for the engine
+    - [ ] commands
+      - [ ] quit
+      - [ ] tei
+      - [ ] size \<size\>
+      - [ ] position [tps \<tpsstring\> | startpos] [moves \<move 1\> ... \<move n\>]
+      - [ ] d -- ppp position
+      - [ ] perft[d] [\<depth\>]
 - [ ] perft analysis
   - [x] scripts for engines
     - [x] auri
@@ -52,6 +77,17 @@
     - [x] tiltak
   - [x] load games from the playtak db
   - [ ] results analysis
+    - [ ] benchmark time to search
+    - [ ] nodes amount deltas between other engines and auri
+- [ ] solvers
+  - [ ] 3x3
+  - [ ] do some math to check if it's actually possible to go higher than 3x3
 
 ## Todos
 - [ ] benchmark a undo function vs using passing by value to clone the positin in perft
+- [ ] ptn moves should not include the drop count on the original square
+- [ ] parse ptn moves
+- [x] perft count seems wrong, test against https://github.com/ViliamVadocz/tak/blob/main/tak/tests/perft.rs
+- [ ] rework the tps loading to be both more flexible and more compliant
+  - [ ] check for input legality as well?
+- [ ] test `unsigned __int128`, both in https://www.chessprogramming.org/10x12_Board and in the stacks to avoid overflows in the `8s`
