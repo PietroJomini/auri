@@ -1,21 +1,13 @@
 ## Features (aka. todos)
-- [ ] game ruleset (tak)
+- [x] game ruleset (tak)
   - [x] board representation
-  - [ ] full game entity
-    - [ ] history
-    - [ ] undo moves
-    - [ ] variations
-    - [ ] comments
-  - [ ] moves
+  - [x] moves
     - [x] generation
       - [x] slides
       - [x] placements
     - [x] do
       - [x] slides
       - [x] placements
-    - [ ] undo
-      - [ ] slides
-      - [ ] placements
     - [x] perft
     - [x] swap rule
   - [x] game endings
@@ -25,16 +17,13 @@
       - [x] full board
     - [x] dragon clause
     - [x] komi
-  - [ ] notations
-    - [ ] tps
+  - [x] notations
+    - [x] tps
       - [x] from
       - [x] to
-      - [ ] check
-    - [ ] ptn
+    - [x] ptn moves
       - [x] moves to
-      - [ ] moves from
-      - [ ] game to, from
-    - [x] playtak db
+      - [x] moves from
 - [ ] opening db
 - [ ] engine
   - [ ] search
@@ -43,7 +32,12 @@
     - [ ] threaded
     - [ ] transposition table
       - [ ] hash
+        - [ ] zobrist
+        - [ ] test collisions
       - [ ] rotations
+        - [ ] incremental rotation: i have 4 positions, each for one rotation, and i update all of them at the same time
+          - pros: faster
+          - cons: 4x space used
   - [ ] evaluation
     - [ ] hand-made euristic
       - [ ] distance to road
@@ -56,38 +50,32 @@
       - [ ] flat-win advantage
     - [ ] alpha0
 - [ ] engines tournament
-- [ ] cli
-  - [ ] perft
-  - [ ] tei
-    - sources
-      - https://github.com/official-stockfish/Stockfish/wiki/UCI-&-Commands#standard-commands
-      - https://github.com/MortenLohne/tiltak/blob/master/README.md
-    - [ ] more than on thread? one for input / control, one for the engine
-    - [ ] commands
-      - [x] quit
-      - [ ] tei
-      - [ ] position [tps \<tpsstring\> | startpos \<size\>] [moves \<move 1\> ... \<move n\>]
-      - [x] print
-      - [x] perft[d] [\<depth\>]
-      - [ ] move \<move 1\> ... \<move n\>
+- [ ] tei
+  - sources
+    - https://github.com/official-stockfish/Stockfish/wiki/UCI-&-Commands#standard-commands
+    - https://github.com/MortenLohne/tiltak/blob/master/README.md
+  - [ ] more than on thread? one for input / control, one for the engine
+  - [ ] commands
+    - [x] quit
+    - [ ] tei
+    - [ ] position [tps \<tpsstring\> | startpos \<size\>] [moves \<move 1\> ... \<move n\>]
+    - [x] print
+    - [x] perft[d] [\<depth\>]
+    - [ ] move \<move 1\> ... \<move n\>
 - [ ] perft analysis
   - [x] scripts for engines
     - [x] auri
     - [x] topaz
     - [x] tiltak
-  - [x] load games from the playtak db
   - [ ] results analysis
     - [ ] benchmark time to search
     - [ ] nodes amount deltas between other engines and auri
-- [ ] solvers
-  - [ ] 3x3
-  - [ ] do some math to check if it's actually possible to go higher than 3x3
 
 ## Todos
-- [ ] benchmark a undo function vs using passing by value to clone the positin in perft
-- [ ] ptn moves should not include the drop count on the original square
-- [ ] parse ptn moves
+- [x] benchmark a undo function vs using passing by value to clone the positin in perft
+  - it's way faster to abuse c and clone the position each time (let's gooo)
+  - maybe i can optimize my poor undo_slide by saving some "undo" date in the "do", but it's probably not worth
+- [x] ptn moves should not include the drop count on the original square
+- [x] parse ptn moves
 - [x] perft count seems wrong, test against https://github.com/ViliamVadocz/tak/blob/main/tak/tests/perft.rs
-- [ ] rework the tps loading to be both more flexible and more compliant
-  - [ ] check for input legality as well?
 - [ ] test `unsigned __int128`, both in https://www.chessprogramming.org/10x12_Board and in the stacks to avoid overflows in the `8s`

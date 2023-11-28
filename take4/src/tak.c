@@ -237,7 +237,6 @@ uint64_t perft(position p, int depth, slides_lt const *slt) {
     // bulk perft
     if (depth == 1) return np + ns;
 
-    // TODO: benchmark a tak_undo_move version
     for (int i = 0; i < np; i++) nodes += perft(do_placement(p, pb[i]), depth - 1, slt);
     for (int i = 0; i < ns; i++) nodes += perft(do_slide(p, sb[i]), depth - 1, slt);
 

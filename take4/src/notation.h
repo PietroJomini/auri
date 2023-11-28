@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "tak.h"
 
@@ -81,3 +82,7 @@ int slide2ptn(char *buffer, slide s, u8 size, ptn_lexicon lexicon);
 // convert move to ptn representation
 // return the length of the string
 int move2ptn(char *buffer, move m, u8 size, ptn_lexicon lexicon);
+
+// parse a ptn string into a move
+// the input is expected to be correct
+move ptn2move(char *ptn, u8 size, player stp, ptn_lexicon lexicon);

@@ -144,7 +144,7 @@ int position2tps(char *buffer, position p, tps_lexicon lexicon) {
 
         // handle remaining jumps
         if (jumping) {
-            // if we jump for less than ths full row, we can be sure that there
+            // if we jump for less than the full row, we can be sure that there
             // were cells previously, so we need the separator
             if (jumping < p.size) buffer[k++] = ',';
 
@@ -166,8 +166,8 @@ int position2tps(char *buffer, position p, tps_lexicon lexicon) {
 const ptn_lexicon PTN_STD = {
     .wall = 'S',
     .cap = 'C',
-    .columns = {'1', '2', '3', '4', '5', '6', '7', '8'},
-    .rows = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'},
+    .rows = {'1', '2', '3', '4', '5', '6', '7', '8'},
+    .columns = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'},
     .directions = {'+', '>', '-', '<'},  // north, east, south, west
     .flattens = '*',
 };
@@ -180,28 +180,26 @@ int placement2ptn(char *buffer, placement p, u8 size, ptn_lexicon lexicon) {
     if (p.piece & CAP) buffer[k++] = lexicon.cap;
 
     // square
-    buffer[k++] = lexicon.rows[p.at % size];
-    buffer[k++] = lexicon.columns[p.at / size];
+    buffer[k++] = lexicon.columns[p.at % size];
+    buffer[k++] = lexicon.rows[p.at / size];
 
     buffer[k++] = '\0';
     return k;
 }
 
 int slide2ptn(char *buffer, slide s, u8 size, ptn_lexicon lexicon) {
-    int k = 0;
-
-    // count
-    // TODO: if the count is > 9 this will fail
-    int count = 0;
+    int count = 0, k = 0;
     for (int i = 0; i < s.length; i++) count += (s.stacks >> 4 * i) & 0xf;
+
+    // count (can't be more than 8)
     if (count > 1) buffer[k++] = '0' + count;
 
     // square, direction
-    buffer[k++] = lexicon.rows[s.origin % size];
-    buffer[k++] = lexicon.columns[s.origin / size];
+    buffer[k++] = lexicon.columns[s.origin % size];
+    buffer[k++] = lexicon.rows[s.origin / size];
     buffer[k++] = lexicon.directions[s.direction];
 
-    // drop count
+    // drops (each can't be more than 8)
     if (s.length > 1)
         for (int i = 0; i < s.length; i++) buffer[k++] = '0' + (s.stacks >> 4 * i & 0xf);
 
@@ -209,7 +207,6 @@ int slide2ptn(char *buffer, slide s, u8 size, ptn_lexicon lexicon) {
     if (s.flattens) buffer[k++] = lexicon.flattens;
 
     buffer[k++] = '\0';
-
     return k;
 }
 
@@ -220,4 +217,64 @@ int move2ptn(char *buffer, move m, u8 size, ptn_lexicon lexicon) {
     }
 
     return 0;
+}
+
+move ptn2move(char *ptn, u8 size, player stp, ptn_lexicon lexicon) {
+    if (strlen(ptn) == 2 || *ptn == lexicon.cap || *ptn == lexicon.wall) {
+        // placement
+        placement p = {0};
+
+        // piece
+        if (*ptn == lexicon.cap) {
+            p.piece = CAP | stp;
+            ptn++;
+        } else if (*ptn == lexicon.wall) {
+            p.piece = WALL | stp;
+            ptn++;
+        } else p.piece = FLAT | stp;
+
+        // square
+        int row = 0, column = 0;
+        while (column < 8 && lexicon.columns[column] != *ptn) column++;
+        while (row < 8 && lexicon.rows[row] != *(ptn + 1)) row++;
+        p.at = column + row * size;
+
+        return (move){.p = p, .t = PLACEMENT};
+    } else {  // slide
+        slide s = {.length = 0, .stacks = 0};
+
+        // count
+        int count = 1;
+        if (*ptn >= '2' && *ptn <= '8') count = *ptn++ - '0';
+
+        // square, direction
+        int row = 0, column = 0, d = 0;
+        while (column < 8 && lexicon.columns[column] != *ptn) column++;
+        while (row < 8 && lexicon.rows[row] != *(ptn + 1)) row++;
+        while (d < 4 && lexicon.directions[d] != *(ptn + 2)) d++;
+        s.origin = column + row * size;
+        s.direction = d;
+        ptn += 3;
+
+        // drops
+        int sum = 0, drop;
+        while (*ptn >= '1' && *ptn <= '8') {
+            drop = *ptn - '0';
+            s.stacks = (s.stacks << 4) | drop;
+            s.length += 1;
+            sum += drop;
+            ptn++;
+        }
+
+        // if no drops, drop all the count on the first cell
+        if (sum == 0) {
+            s.stacks = count;
+            s.length = 1;
+        }
+
+        // flattens
+        if (*ptn == lexicon.flattens) s.flattens = 1;
+
+        return (move){.s = s, .t = SLIDE};
+    }
 }
