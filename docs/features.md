@@ -64,12 +64,12 @@
       - https://github.com/MortenLohne/tiltak/blob/master/README.md
     - [ ] more than on thread? one for input / control, one for the engine
     - [ ] commands
-      - [ ] quit
+      - [x] quit
       - [ ] tei
-      - [ ] size \<size\>
-      - [ ] position [tps \<tpsstring\> | startpos] [moves \<move 1\> ... \<move n\>]
-      - [ ] d -- ppp position
-      - [ ] perft[d] [\<depth\>]
+      - [ ] position [tps \<tpsstring\> | startpos \<size\>] [moves \<move 1\> ... \<move n\>]
+      - [x] print
+      - [x] perft[d] [\<depth\>]
+      - [ ] move \<move 1\> ... \<move n\>
 - [ ] perft analysis
   - [x] scripts for engines
     - [x] auri

@@ -5,9 +5,6 @@
 
 #include "tak.h"
 
-// pretty print a position to stdout
-void ppp(position p);
-
 // on 8x8, arranging the flats as 96 walls and 4 flats:
 //  7 row separators
 //  56 cell separators
