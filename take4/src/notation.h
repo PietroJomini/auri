@@ -42,7 +42,7 @@ int tps_getsize(char *tps, tps_lexicon lexicon);
 int mirror_index(int index, int size);
 
 // parse tps string into new position
-position tps2position(char *tps, tps_lexicon lexicon);
+position tps2position(char *tps, tps_lexicon lexicon, zobrist_data *zd);
 
 // encode a position as tps and load the result in `buffer`.
 // buffer is expected to have capacity >= TPS_MAX_LENGTH.

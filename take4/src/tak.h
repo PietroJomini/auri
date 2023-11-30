@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "../base/random.h"
+
 // dunno, maybe this is not necessary?
 #define u8 uint8_t
 #define u32 uint32_t
@@ -41,10 +43,33 @@ typedef struct {
     // remaining pieces
     // { .0 = white, .i = black } { .0 = flats, .1 = caps }
     u8 reserves[2][2];
+
+    // zobrist hash
+    u64 hash;
 } position;
 
 // create a new, empty position
 position new_position(int size);
+
+// if i generate a key for each piece in each position in a stack
+// i'd have to generate 64*64 (maybe 64*128 in the future) numbers,
+// which sounds overkill.
+// but probably i can (safely?) ignore all pieces above a certain
+// threshold, to be adjusted in the future.
+#define ZOBRIST_STACK_HEIGHT_THRESH 15
+
+// does u128 improves much?
+typedef struct {
+    u64 btp;                               // black to play
+    u64 stacks[ZOBRIST_STACK_HEIGHT_THRESH * 64];  // in 64 chunks of STACK_HEIGHT_THRESH elements
+    u64 walls[64];
+    u64 caps[64];
+} zobrist_data;
+
+zobrist_data zobrist_fill();
+
+// hash a position from zero
+void zobrist(position *p, zobrist_data *d);
 
 // amount of precomputed slides in the lookup table
 #define SLT_LENGTH 255
@@ -80,7 +105,7 @@ typedef struct {
     direction direction;
     u8 origin;
     u8 length;
-    u32 stacks; // the first drop is located in the lsb nibble
+    u32 stacks;  // the first drop is located in the lsb nibble
     u8 flattens;
 } slide;
 
@@ -99,7 +124,7 @@ int search_slides(slide *buffer, position const *p, slides_lt const *slt);
 
 // apply a slide to a position
 // assumes the slide to be legal
-position do_slide(position p, slide s);
+position do_slide(position p, slide s, zobrist_data *zd);
 
 // base placement representation
 typedef struct {
@@ -117,10 +142,10 @@ int search_placements(placement *buffer, position const *p);
 
 // apply a placement to a position
 // assumes the placement to be legal
-position do_placement(position p, placement pl);
+position do_placement(position p, placement pl, zobrist_data *zd);
 
 // bulk perft
-uint64_t perft(position p, int depth, slides_lt const *slt);
+uint64_t perft(position p, int depth, slides_lt const *slt, zobrist_data *zd);
 
 // end causes
 typedef enum { ROAD, FLATWIN, TIE } endcause;
@@ -154,4 +179,4 @@ typedef struct {
 // a *union, so we can assign the `placement`s and `slide`s individually, and then
 // also have a buffer for the type of the move?
 int search_moves(move *buffer, position const *p, slides_lt const *slt);
-position do_move(position p, move mv);
+position do_move(position p, move mv, zobrist_data *zd);

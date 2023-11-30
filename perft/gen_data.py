@@ -19,7 +19,7 @@ from tqdm import tqdm
 from tqdm.asyncio import tqdm as atqdm
 
 data = "data"
-positions = Path(__file__).parent / data / "positions.tps"
+positions = Path(__file__).parent / data / "5.tps"
 n_positions = positions.read_text().count("\n")
 perft_upto = 4
 
@@ -103,10 +103,11 @@ async def clean(engines: List[Engine]):
 
 if __name__ == "__main__":
     engines = [
-        Engine("auri", "auri_perft", "make", "build/perft"),
-        Engine.rust("tiltak", "tiltak_perft"),
+        Engine("take4", "take4_perft", "make", "build/perft"),
+        Engine("take4u", "take4u_perft", "make", "build/perft"),
+        # Engine.rust("tiltak", "tiltak_perft"),
         # Engine.rust("topaz", "topaz_perft"),
     ]
 
     asyncio.run(prelude(engines))
-    asyncio.run(clean(engines))
+    # asyncio.run(clean(engines))

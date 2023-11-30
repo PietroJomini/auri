@@ -11,6 +11,40 @@ position new_position(int size) {
     };
 }
 
+zobrist_data zobrist_fill() {
+    xoshiro_state state = {.s = {3, 1, 4, 1}};  // TODO: find good values to init this
+    zobrist_data d;
+
+    d.btp = xoshiro(&state);
+    for (int i = 0; i < ZOBRIST_STACK_HEIGHT_THRESH * 64; i++)
+        d.stacks[i] = xoshiro(&state);
+    for (int i = 0; i < 64; i++) {
+        d.walls[i] = xoshiro(&state);
+        d.caps[i] = xoshiro(&state);
+    }
+
+    return d;
+}
+
+void zobrist(position *p, zobrist_data *d) {
+    p->hash = 0;
+
+    // btp
+    if (p->stp == 1) p->hash ^= d->btp;
+
+    u64 sq = 1;
+    for (int i = 0; i < p->size * p->size; i++) {
+        // stacks
+        for (int h = 0; h < ZOBRIST_STACK_HEIGHT_THRESH && h < p->heights[i]; h++)
+            p->hash ^= d->stacks[h + i * ZOBRIST_STACK_HEIGHT_THRESH];
+
+        // walls, caps
+        if (p->walls & sq) p->hash ^= d->walls[i];
+        if (p->caps & sq) p->hash ^= d->caps[i];
+        sq <<= 1;
+    }
+}
+
 u32 slt_reduce(int n, int h) {
     u32 stacks = 0;
     u8 stack = 1;
@@ -114,7 +148,7 @@ int search_slides(slide *buffer, position const *p, slides_lt const *slt) {
     return k;
 }
 
-position do_slide(position p, slide s) {
+position do_slide(position p, slide s, zobrist_data *zd) {
     // last cell of the slide
     int target = s.origin + s.length * (s.direction == EAST    ? 1
                                         : s.direction == SOUTH ? -p.size
@@ -127,11 +161,16 @@ position do_slide(position p, slide s) {
     if (p.walls & os) p.walls = (p.walls & ~os) | ts;
     if (s.flattens) p.walls &= ~ts;
 
-    int i = 0, color;
+    int i = 0, color, ch = 0;
     direction od = direction_o(s.direction);
     while (target != s.origin) {
         // get the height of the current drop
         int h = s.stacks >> 4 * (s.length - i - 1) & 0xf;
+        ch += h;
+
+        // update hash (for the added elements on the target)
+        for (int i = p.heights[target]; i < p.heights[target] + h; i++)
+            p.hash ^= zd->stacks[ZOBRIST_STACK_HEIGHT_THRESH * target + i];
 
         // update target
         // TODO: here on 8x8 it can overflow, check and avoid. __int128?
@@ -153,6 +192,10 @@ position do_slide(position p, slide s) {
         target = walk(target, od, p.size);
         i++;
     }
+
+    // update hash (for the removed elements on the origin)
+    for (int i = p.heights[s.origin] + ch; i >= p.heights[s.origin]; i--)
+        p.hash ^= zd->stacks[ZOBRIST_STACK_HEIGHT_THRESH * s.origin + i];
 
     // pdate origin color
     if (p.heights[s.origin] == 0) {
@@ -196,7 +239,7 @@ int search_placements(placement *buffer, position const *p) {
     return k;
 }
 
-position do_placement(position p, placement pl) {
+position do_placement(position p, placement pl, zobrist_data *zd) {
     player color = pl.piece & 1;
 
     // stack and height
@@ -216,10 +259,13 @@ position do_placement(position p, placement pl) {
     p.stp = 1 - p.stp;
     p.mc += 1;
 
+    // hash
+    p.hash ^= zd->stacks[ZOBRIST_STACK_HEIGHT_THRESH * pl.at];
+
     return p;
 }
 
-uint64_t perft(position p, int depth, slides_lt const *slt) {
+uint64_t perft(position p, int depth, slides_lt const *slt, zobrist_data *zd) {
     if (depth == 0) return 1;
     uint64_t nodes = 0;
 
@@ -237,8 +283,10 @@ uint64_t perft(position p, int depth, slides_lt const *slt) {
     // bulk perft
     if (depth == 1) return np + ns;
 
-    for (int i = 0; i < np; i++) nodes += perft(do_placement(p, pb[i]), depth - 1, slt);
-    for (int i = 0; i < ns; i++) nodes += perft(do_slide(p, sb[i]), depth - 1, slt);
+    for (int i = 0; i < np; i++)
+        nodes += perft(do_placement(p, pb[i], zd), depth - 1, slt, zd);
+    for (int i = 0; i < ns; i++)
+        nodes += perft(do_slide(p, sb[i], zd), depth - 1, slt, zd);
 
     return nodes;
 }
@@ -322,10 +370,10 @@ int search_moves(move *buffer, position const *p, slides_lt const *slt) {
     return plc + slc;
 }
 
-position do_move(position p, move mv) {
+position do_move(position p, move mv, zobrist_data *zd) {
     switch (mv.t) {
-        case PLACEMENT: return do_placement(p, mv.p);
-        case SLIDE: return do_slide(p, mv.s);
+        case PLACEMENT: return do_placement(p, mv.p, zd);
+        case SLIDE: return do_slide(p, mv.s, zd);
     }
 
     return p;

@@ -25,7 +25,19 @@ uint8 reserves[2][2];
 
 some notes:
 - some bits are wasted, but the complexity of packing tighter the data is unlikely to be beneficial
-- `uint64` fields are basically bitboards
+
+## Rotations
+
+https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Flip_and_Mirror
+
+- original
+- rotate 90
+- rotate 180
+- rotate 270
+- mirror 
+- mirror rotate 90
+- mirror rotate 180
+- mirror rotate 270
 
 ## Slides
 

@@ -17,12 +17,13 @@ int randint(int a, int b) { return a + rand() % (b - a + 1); }
 
 position random_position(int size, int depth, slides_lt *slt) {
     position p = new_position(size), np;
+    zobrist_data zd = zobrist_fill();
     move buffer[500 + PLACEMENTS_MAX_AMOUNT];
     int t;
 
     while (--depth > 0) {
         t = search_moves(buffer, &p, slt);
-        np = do_move(p, buffer[randint(0, t - 1)]);
+        np = do_move(p, buffer[randint(0, t - 1)], &zd);
 
         // check if the game is ended
         if (check_ending(&np, 0).ended) return p;

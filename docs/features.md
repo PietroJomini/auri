@@ -31,13 +31,15 @@
     - [ ] monte carlo
     - [ ] threaded
     - [ ] transposition table
+      - [x] hashmap
       - [ ] hash
-        - [ ] zobrist
+        - [x] zobrist
         - [ ] test collisions
       - [ ] rotations
-        - [ ] incremental rotation: i have 4 positions, each for one rotation, and i update all of them at the same time
+        - [ ] incremental rotation: i have 8 positions, each for one rotation, and i update all of them at the same time
           - pros: faster
           - cons: 4x space used
+          - maybe i can only save 8 zobrist hash, and update them with the indexes rotated
   - [ ] evaluation
     - [ ] hand-made euristic
       - [ ] distance to road
@@ -54,7 +56,7 @@
   - sources
     - https://github.com/official-stockfish/Stockfish/wiki/UCI-&-Commands#standard-commands
     - https://github.com/MortenLohne/tiltak/blob/master/README.md
-  - [ ] more than on thread? one for input / control, one for the engine
+  - [ ] more than one thread? one for input / control, one for the engine
   - [ ] commands
     - [x] quit
     - [ ] tei
@@ -72,10 +74,5 @@
     - [ ] nodes amount deltas between other engines and auri
 
 ## Todos
-- [x] benchmark a undo function vs using passing by value to clone the positin in perft
-  - it's way faster to abuse c and clone the position each time (let's gooo)
-  - maybe i can optimize my poor undo_slide by saving some "undo" date in the "do", but it's probably not worth
-- [x] ptn moves should not include the drop count on the original square
-- [x] parse ptn moves
-- [x] perft count seems wrong, test against https://github.com/ViliamVadocz/tak/blob/main/tak/tests/perft.rs
 - [ ] test `unsigned __int128`, both in https://www.chessprogramming.org/10x12_Board and in the stacks to avoid overflows in the `8s`
+- [ ] solve empty buckets in full hashmap

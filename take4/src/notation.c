@@ -24,7 +24,7 @@ int mirror_index(int index, int size) {
 }
 
 // TODO: benchmark against a strtok_r version
-position tps2position(char *tps, tps_lexicon lexicon) {
+position tps2position(char *tps, tps_lexicon lexicon, zobrist_data *zd) {
     position p = new_position(tps_getsize(tps, lexicon));
 
     // main section
@@ -95,6 +95,9 @@ position tps2position(char *tps, tps_lexicon lexicon) {
     while (*tps == lexicon.section_s) tps++;
     p.mc = strtol(tps, &tps, 10) - 1;
     p.mc = p.mc * 2 + p.stp;
+
+    // hash
+    zobrist(&p, zd);
 
     return p;
 }

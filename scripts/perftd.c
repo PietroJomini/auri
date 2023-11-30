@@ -8,7 +8,7 @@
 #define DEFAULT_SIZE 6
 #define DEFAULT_DEPTH 3
 
-void perftd(position p, int depth) {
+void perftd(position p, int depth, zobrist_data *zd) {
     u64 nodes = 0, nnodes = 0;
     slides_lt slt = slt_fill();
 
@@ -19,7 +19,7 @@ void perftd(position p, int depth) {
     char ptn[MAX_PTN_MOVE];
 
     for (int i = 0; i < n; i++) {
-        nnodes = perft(do_move(p, buffer[i]), depth - 1, &slt);
+        nnodes = perft(do_move(p, buffer[i], zd), depth - 1, &slt, zd);
         nodes += nnodes;
 
         move2ptn(ptn, buffer[i], p.size, PTN_STD);
@@ -43,8 +43,10 @@ int main(int argc, char **argv) {
     if (size < 3 || size > 8) size = DEFAULT_SIZE;
     if (depth < 1) depth = 1;
 
-    perftd((optind < argc) ? tps2position(argv[optind], TPS_STD) : new_position(size),
-           depth);
+    zobrist_data zd = zobrist_fill();
+    position p =
+        (optind < argc) ? tps2position(argv[optind], TPS_STD, &zd) : new_position(size);
+    perftd(p, depth, &zd);
 
     return EXIT_SUCCESS;
 }

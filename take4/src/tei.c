@@ -2,13 +2,13 @@
 
 #include "tei.h"
 
-#include "notation.h"
-#include "tak.h"
-
 void tei_loop() {
     int argc, ccalled;
     char line[TEI_LINE_BUFSIZE], *argv[TEI_MAX_ARGC], *token, *saveptr;
-    tei_data data = {.p = new_position(TEI_DEFAULT_SIZE), .slt = slt_fill(), .status = 1};
+    tei_data data = {.p = new_position(TEI_DEFAULT_SIZE),
+                     .slt = slt_fill(),
+                     .zd = zobrist_fill(),
+                     .status = 1};
     tei_command commands[] = {
         {"quit", &_tei_quit},
         {"position", &_tei_position},
@@ -61,7 +61,7 @@ void _tei_position(tei_data *data, int argc, char **argv) {
     if (strcmp(argv[1], "tps") == 0 && argc >= 5) {
         char tps[TPS_MAX_LENGTH];
         snprintf(tps, TPS_MAX_LENGTH, "%s %s %s", argv[2], argv[3], argv[4]);
-        data->p = tps2position(tps, TPS_STD);
+        data->p = tps2position(tps, TPS_STD, &data->zd);
     }
     if (strcmp(argv[1], "startpos") == 0) {
         int size = (argc >= 3) ? atoi(argv[2]) : TEI_DEFAULT_SIZE;
@@ -169,5 +169,5 @@ void _tei_perft(tei_data *data, int argc, char **argv) {
         depth = (depth >= 0) ? depth : TEI_DEFAULT_DEPTH;
     }
 
-    printf("%ld\n", perft(data->p, depth, &data->slt));
+    printf("%ld\n", perft(data->p, depth, &data->slt, &data->zd));
 }

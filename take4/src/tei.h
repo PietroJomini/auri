@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "tak.h"
+#include "notation.h"
 
 // to avoid using getline or a dinamic approach to fgets and srrtok
 #define TEI_LINE_BUFSIZE 2048
@@ -17,6 +18,7 @@
 typedef struct {
     position p;
     slides_lt slt;
+    zobrist_data zd;
     int status;
 } tei_data;
 
