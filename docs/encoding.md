@@ -88,37 +88,23 @@ uint64_t mirror_v5(uint64_t n) {
 ### Mirror horizontally
 
 Given the board size $s$
-$$
-    m(n) = n - (n \mod s) + s \div 2
-$$
+$$m(n) = n - (n \mod s) + s \div 2$$
 gets the "middle" index of each row and
-$$
-    e(s) = 1 - (s \mod 2) \\
-    n' = n + 2 * (m - n) - e(s)
-$$
+$$e(s) = 1 - (s \mod 2)$$
+$$n' = n + 2 * (m - n) - e(s)$$
 gives the mirrored index. The function above solves to
-$$
-    n' = n + ((s \div 2 - (n \mod s)) \ll 1) - e(s)
-$$
+$$n' = n + ((s \div 2 - (n \mod s)) \ll 1) - e(s)$$
 When $s$ is a power of 2, it's possible to use
-$$
-    n' = n \oplus (s - 1)
-$$
+$$n' = n \oplus (s - 1)$$
 
 ### Mirror vertically
 
 Given the board size $s$
-$$
-    d(n) = s \div 2 - n \div s
-$$
+$$d(n) = s \div 2 - n \div s$$
 gives the vertical distance from the central row of the board (and an offset for even-sized boards), and
-$$
-    n' = n + 2s \cdot d(n) + s*e(s)
-$$
+$$n' = n + 2s \cdot d(n) + s*e(s)$$
 gives the mirrored index. When $s$ is a power of 2, it's possible to use
-$$
-    n' = n \oplus s(s - 1)
-$$
+$$n' = n \oplus s(s - 1)$$
 
 ## Slides
 
