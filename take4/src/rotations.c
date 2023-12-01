@@ -12,6 +12,6 @@ uint8_t mirror_h8(uint8_t n) { return n ^ 7; }  // n + ((4 - (n % 8)) << 1) - 1
 uint8_t mirror_v3(uint8_t n) { return n + 6 * (1 - n / 3); }
 uint8_t mirror_v4(uint8_t n) { return n ^ 12; }
 uint8_t mirror_v5(uint8_t n) { return n + 10 * (2 - n / 5); }
-uint8_t mirror_v6(uint8_t n) { return n + 12 * (2 - n / 6) + 1; }
+uint8_t mirror_v6(uint8_t n) { return n + 12 * (2 - n / 6) + 6; }
 uint8_t mirror_v7(uint8_t n) { return n + 14 * (3 - n / 7); }
 uint8_t mirror_v8(uint8_t n) { return n ^ 56; }

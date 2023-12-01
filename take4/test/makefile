@@ -13,7 +13,9 @@ BINS = $(addprefix $(OUT)/,$(basename $(TARGETS)))
 .PHONY: all run clean
 
 all: $(BINS)
-	$(BINS) | parallel -j0
+	@for bin in $(BINS); do \
+		$$bin; \
+	done
 
 $(OUT)/%: %.c $(SRC) $(INC)
 	$(CC) -o $@ $(SRC) $< $(CFLAGS)
