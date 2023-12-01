@@ -110,7 +110,7 @@ typedef struct {
 } slide;
 
 // TODO: max number of slides?
-// #define SLIDES_MAX_AMOUNT
+#define SLIDES_MAX_AMOUNT 32704
 
 // search all possible slides in the given position,
 // starting from a given square and sliding in the given direction.

@@ -274,9 +274,8 @@ uint64_t perft(position p, int depth, slides_lt const *slt, zobrist_data *zd) {
     if (status.ended) return 1;
 
     // load moves
-    // TODO: while placements are capped at 196 (64*3), what is the max amount of slides?
     placement pb[PLACEMENTS_MAX_AMOUNT];
-    slide sb[500];
+    slide sb[SLIDES_MAX_AMOUNT];
     int np = search_placements(pb, &p);
     int ns = search_slides(sb, &p, slt);
 
@@ -357,7 +356,7 @@ endstatus check_ending(position const *p, int komi) {
 
 int search_moves(move *buffer, position const *p, slides_lt const *slt) {
     placement plb[PLACEMENTS_MAX_AMOUNT];
-    slide slb[500];  // TODO: SLIDES_MAX_AMOUNT
+    slide slb[SLIDES_MAX_AMOUNT];
 
     // load moves
     int plc = search_placements(plb, p);
