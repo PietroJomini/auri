@@ -11,6 +11,9 @@ typedef struct {
     // makes things easier, but negate the option of using separate chaining.
     // i would argue that's fine, since double hasing and open addressing are
     // better anyway
+    // maybe it's also a good idea to test having each bucket preallocate
+    // a small array (eg. 5 positions) and, when full, override choosing
+    // based on some tought parameters (eg. oldest, or less read?) like stockfish
     position **items;  // test also with an array of elements all at 0,
                        // not of pointers. maybe it's slower to create
                        // but faster to insert and search?

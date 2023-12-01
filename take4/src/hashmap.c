@@ -24,7 +24,9 @@ void hmap_set(hmap *hm, position p) {
     // TODO: somehow (in testing, random positions, capacity 100
     // and 100 elements) sometimes (2) the probing don't find an ampty
     // spot? but if i add 5 more elemets it fills the empty buckets
-    u64 probe = 0, override = hm->size == hm->capacity;
+    u64 probe = 0,
+        override = hm->size == hm->capacity;  // maybe i can also test starting to
+                                              // override at a certain fill rate? 80%?
     while (address != NULL && !override && probe < hm->capacity) {
         index = (index + probe) % hm->capacity;
         address = hm->items[index];

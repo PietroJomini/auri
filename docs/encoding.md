@@ -3,7 +3,7 @@
 ## Position
 
 Each position, meaning a screenshot af a board in a given position, is encoded as
-```
+```c
 uint8 size;     // board size
 uint8 stp;      // side to play
 uint8 mc;       // played moves count
@@ -30,14 +30,95 @@ some notes:
 
 https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Flip_and_Mirror
 
-- original
-- rotate 90
-- rotate 180
-- rotate 270
-- mirror 
-- mirror rotate 90
-- mirror rotate 180
-- mirror rotate 270
+| rotation              | equivalent                 |
+| --------------------- | -------------------------- |
+| original              |                            |
+| rotate +90            | mirror antidiag + mirror h |
+| rotate 180            | mirror v + mirror h        |
+| rotate -90            | mirror diag + mirror h     |
+| mirror h              |                            |
+| mirror h + rotate +90 | mirror antidiag            |
+| mirror h + rotate 180 | mirror v                   |
+| mirror h + rotate -90 | mirror diag                |
+
+Probably it's ok to store 8 zobrist hash insthead of 8 different rotated positions, and update each hash with rotated indexes.
+
+Even if that happens to be not enough, it shoudn't be hard to implement bitboard rotations for each size as series of delta swaps. For example, mirroring on 5s is:
+```c
+// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 ...
+// a b c d e f g h i j k l m n o p q r s t u v w x y ...
+// e d c b a j i h g f o n m l k t s r q p y z w v u ...
+//
+// swap 1: delta 4
+//  from: 1000010000100001000010000
+//    to: 0000100001000010000100001
+// swap 2: delta 2
+//  from: 0100001000010000100001000
+//    to: 0001000010000100001000010
+//
+// there should be no need to reverse the numbers from above
+// to the right endiannes, as they should be simmetrical
+uint64_t mirror_h5(uint64_t n) {
+    return (n & 0b1000010000100001000010000) >> 4 |
+           (n & 0b0000100001000010000100001) << 4 |
+           (n & 0b0100001000010000100001000) >> 2 |
+           (n & 0b0001000010000100001000010) >> 2;
+}
+
+// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 ...
+// a b c d e f g h i j k l m n o p q r s t u v w x y ...
+// u v w x y p q r s t o n m l k f g h i j a b c d e ...
+// 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0
+// 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+//
+// swap 1: delta 20
+//  from: 1111100000000000000000000
+//    to: 0000000000000000000011111
+// swap 2: delta 10
+//  from: 0000011111000000000000000
+//    to: 0000000000000001111100000
+uint64_t mirror_v5(uint64_t n) {
+    return (n & 0b1111100000000000000000000) >> 20 |
+           (n & 0b0000000000000000000011111) << 20 |
+           (n & 0b0000011111000000000000000) >> 10 |
+           (n & 0b0000000000000001111100000) >> 10;
+}
+```
+
+### Mirror horizontally
+
+Given the board size $s$
+$$
+    m(n) = n - (n \mod s) + s \div 2
+$$
+gets the "middle" index of each row and
+$$
+    e(s) = 1 - (s \mod 2) \\
+    n' = n + 2 * (m - n) - e(s)
+$$
+gives the mirrored index. The function above solves to
+$$
+    n' = n + ((s \div 2 - (n \mod s)) \ll 1) - e(s)
+$$
+When $s$ is a power of 2, it's possible to use
+$$
+    n' = n \oplus (s - 1)
+$$
+
+### Mirror vertically
+
+Given the board size $s$
+$$
+    d(n) = s \div 2 - n \div s
+$$
+gives the vertical distance from the central row of the board (and an offset for even-sized boards), and
+$$
+    n' = n + 2s \cdot d(n) + s*e(s)
+$$
+gives the mirrored index. When $s$ is a power of 2, it's possible to use
+$$
+    n' = n \oplus s(s - 1)
+$$
 
 ## Slides
 

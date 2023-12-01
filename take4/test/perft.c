@@ -4,27 +4,28 @@
 
 #include "../src/tak.h"
 
-void test_5(slides_lt *slt) {
-    assert(perft(new_position(5), 0, slt) == 1);
-    assert(perft(new_position(5), 1, slt) == 25);
-    assert(perft(new_position(5), 2, slt) == 600);
-    assert(perft(new_position(5), 3, slt) == 43320);
-    assert(perft(new_position(5), 4, slt) == 2999784);
+void test_5(slides_lt *slt, zobrist_data *zd) {
+    assert(perft(new_position(5), 0, slt, zd) == 1);
+    assert(perft(new_position(5), 1, slt, zd) == 25);
+    assert(perft(new_position(5), 2, slt, zd) == 600);
+    assert(perft(new_position(5), 3, slt, zd) == 43320);
+    assert(perft(new_position(5), 4, slt, zd) == 2999784);
 }
 
-void test_6(slides_lt *slt) {
-    assert(perft(new_position(6), 0, slt) == 1);
-    assert(perft(new_position(6), 1, slt) == 36);
-    assert(perft(new_position(6), 2, slt) == 1260);
-    assert(perft(new_position(6), 3, slt) == 132720);
-    assert(perft(new_position(6), 4, slt) == 13586048);
+void test_6(slides_lt *slt, zobrist_data *zd) {
+    assert(perft(new_position(6), 0, slt, zd) == 1);
+    assert(perft(new_position(6), 1, slt, zd) == 36);
+    assert(perft(new_position(6), 2, slt, zd) == 1260);
+    assert(perft(new_position(6), 3, slt, zd) == 132720);
+    assert(perft(new_position(6), 4, slt, zd) == 13586048);
 }
 
 int main() {
     slides_lt slt = slt_fill();
+    zobrist_data zd = zobrist_fill();
 
-    test_5(&slt);
-    test_6(&slt);
+    test_5(&slt, &zd);
+    test_6(&slt, &zd);
 
     return 0;
 }

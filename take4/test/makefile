@@ -5,8 +5,8 @@ CFLAGS += -Wextra -Wall -Wpedantic
 
 # dirs
 OUT = bin
-SRC = $(wildcard ../src/*.c) $(wildcard ../src/**/*.c)
-INC = $(wildcard ../src/*.h) $(wildcard ../src/**/*.h)
+SRC = $(wildcard ../src/*.c) $(wildcard ../base/*.c)
+INC = $(wildcard ../src/*.h) $(wildcard ../base/*.h)
 TARGETS = $(wildcard *.c)
 BINS = $(addprefix $(OUT)/,$(basename $(TARGETS)))
 
