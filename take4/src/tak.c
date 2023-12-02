@@ -26,21 +26,65 @@ zobrist_data zobrist_fill() {
     return d;
 }
 
+void zobrist_btp(position *p, zobrist_data *d) {
+    p->hash[0] ^= d->btp;
+    p->hash[1] ^= d->btp;
+    p->hash[2] ^= d->btp;
+    p->hash[3] ^= d->btp;
+    p->hash[4] ^= d->btp;
+    p->hash[5] ^= d->btp;
+    p->hash[6] ^= d->btp;
+    p->hash[7] ^= d->btp;
+}
+
+void zobrist_stack(position *p, zobrist_data *d, u8 index, u8 h) {
+    p->hash[0] ^= d->stacks[h + index * ZOBRIST_STACK_HEIGHT_THRESH];
+    p->hash[1] ^= d->stacks[h + mirror_h(index, p->size) * ZOBRIST_STACK_HEIGHT_THRESH];
+    p->hash[2] ^= d->stacks[h + mirror_v(index, p->size) * ZOBRIST_STACK_HEIGHT_THRESH];
+    p->hash[3] ^= d->stacks[h + mirror_d(index, p->size) * ZOBRIST_STACK_HEIGHT_THRESH];
+    p->hash[4] ^= d->stacks[h + mirror_a(index, p->size) * ZOBRIST_STACK_HEIGHT_THRESH];
+    p->hash[5] ^= d->stacks[h + rotate(index, p->size) * ZOBRIST_STACK_HEIGHT_THRESH];
+    p->hash[6] ^= d->stacks[h + rotate_c(index, p->size) * ZOBRIST_STACK_HEIGHT_THRESH];
+    p->hash[7] ^= d->stacks[h + rotate_a(index, p->size) * ZOBRIST_STACK_HEIGHT_THRESH];
+}
+
+void zobrist_wall(position *p, zobrist_data *d, u8 index) {
+    p->hash[0] ^= d->walls[index];
+    p->hash[1] ^= d->walls[mirror_h(index, p->size)];
+    p->hash[2] ^= d->walls[mirror_v(index, p->size)];
+    p->hash[3] ^= d->walls[mirror_d(index, p->size)];
+    p->hash[4] ^= d->walls[mirror_a(index, p->size)];
+    p->hash[5] ^= d->walls[rotate(index, p->size)];
+    p->hash[6] ^= d->walls[rotate_c(index, p->size)];
+    p->hash[7] ^= d->walls[rotate_a(index, p->size)];
+}
+
+void zobrist_cap(position *p, zobrist_data *d, u8 index) {
+    p->hash[0] ^= d->caps[index];
+    p->hash[1] ^= d->caps[mirror_h(index, p->size)];
+    p->hash[2] ^= d->caps[mirror_v(index, p->size)];
+    p->hash[3] ^= d->caps[mirror_d(index, p->size)];
+    p->hash[4] ^= d->caps[mirror_a(index, p->size)];
+    p->hash[5] ^= d->caps[rotate(index, p->size)];
+    p->hash[6] ^= d->caps[rotate_c(index, p->size)];
+    p->hash[7] ^= d->caps[rotate_a(index, p->size)];
+}
+
 void zobrist(position *p, zobrist_data *d) {
-    p->hash = 0;
+    for (int i = 0; i < N_ROT; i++) p->hash[i] = 0;
 
     // btp
-    if (p->stp == 1) p->hash ^= d->btp;
+    if (p->stp == 1) zobrist_btp(p, d);
 
     u64 sq = 1;
     for (int i = 0; i < p->size * p->size; i++) {
         // stacks
         for (int h = 0; h < ZOBRIST_STACK_HEIGHT_THRESH && h < p->heights[i]; h++)
-            p->hash ^= d->stacks[h + i * ZOBRIST_STACK_HEIGHT_THRESH];
+            zobrist_stack(p, d, i, h);
 
         // walls, caps
-        if (p->walls & sq) p->hash ^= d->walls[i];
-        if (p->caps & sq) p->hash ^= d->caps[i];
+        if (p->walls & sq) zobrist_wall(p, d, i);
+        if (p->caps & sq) zobrist_cap(p, d, i);
         sq <<= 1;
     }
 }
@@ -170,7 +214,7 @@ position do_slide(position p, slide s, zobrist_data *zd) {
 
         // update hash (for the added elements on the target)
         for (int i = p.heights[target]; i < p.heights[target] + h; i++)
-            p.hash ^= zd->stacks[ZOBRIST_STACK_HEIGHT_THRESH * target + i];
+            zobrist_stack(&p, zd, target, i);
 
         // update target
         // TODO: here on 8x8 it can overflow, check and avoid. __int128?
@@ -195,7 +239,7 @@ position do_slide(position p, slide s, zobrist_data *zd) {
 
     // update hash (for the removed elements on the origin)
     for (int i = p.heights[s.origin] + ch; i >= p.heights[s.origin]; i--)
-        p.hash ^= zd->stacks[ZOBRIST_STACK_HEIGHT_THRESH * s.origin + i];
+        zobrist_stack(&p, zd, s.origin, i);
 
     // pdate origin color
     if (p.heights[s.origin] == 0) {
@@ -208,6 +252,7 @@ position do_slide(position p, slide s, zobrist_data *zd) {
     }
 
     // mc, stp
+    zobrist_btp(&p, zd);
     p.stp = 1 - p.stp;
     p.mc += 1;
 
@@ -260,7 +305,8 @@ position do_placement(position p, placement pl, zobrist_data *zd) {
     p.mc += 1;
 
     // hash
-    p.hash ^= zd->stacks[ZOBRIST_STACK_HEIGHT_THRESH * pl.at];
+    zobrist_btp(&p, zd);
+    zobrist_stack(&p, zd, pl.at, 0);
 
     return p;
 }

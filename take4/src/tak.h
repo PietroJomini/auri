@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "../base/random.h"
+#include "rot.h"
 
 // dunno, maybe this is not necessary?
 #define u8 uint8_t
@@ -45,7 +46,7 @@ typedef struct {
     u8 reserves[2][2];
 
     // zobrist hash
-    u64 hash;
+    u64 hash[N_ROT];
 } position;
 
 // create a new, empty position
@@ -60,13 +61,26 @@ position new_position(int size);
 
 // does u128 improves much?
 typedef struct {
-    u64 btp;                               // black to play
-    u64 stacks[ZOBRIST_STACK_HEIGHT_THRESH * 64];  // in 64 chunks of STACK_HEIGHT_THRESH elements
+    u64 btp;  // black to play
+    // in 64 chunks of STACK_HEIGHT_THRESH elements
+    u64 stacks[ZOBRIST_STACK_HEIGHT_THRESH * 64];
     u64 walls[64];
     u64 caps[64];
 } zobrist_data;
 
 zobrist_data zobrist_fill();
+
+// update hashes with btp
+void zobrist_btp(position *p, zobrist_data *d);
+
+// update hashes with a stack item
+void zobrist_stack(position *p, zobrist_data *d, u8 index, u8 h);
+
+// update hashes with a wall
+void zobrist_wall(position *p, zobrist_data *d, u8 index);
+
+// update hashes with a cap
+void zobrist_cap(position *p, zobrist_data *d, u8 index);
 
 // hash a position from zero
 void zobrist(position *p, zobrist_data *d);
