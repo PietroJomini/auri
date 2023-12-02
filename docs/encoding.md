@@ -41,6 +41,16 @@ https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Flip_and_Mirror
 | mirror h + rotate 180 | mirror v                   |
 | mirror h + rotate -90 | mirror diag                |
 
+- Basics:
+  - h
+  - v
+  - diag
+  - 180
+- Composed:
+  - +90 = giag + h + 180 = -90 + 180
+  - -90 = diag + h
+  - antidiag = diag + 180
+
 Probably it's ok to store 8 zobrist hash insthead of 8 different rotated positions, and update each hash with rotated indexes.
 
 Even if that happens to be not enough, it shoudn't be hard to implement bitboard rotations for each size as series of delta swaps. For example, mirroring on 5s is:
@@ -105,6 +115,11 @@ gives the vertical distance from the central row of the board (and an offset for
 $$n' = n + 2s \cdot d(n) + s*e(s)$$
 gives the mirrored index. When $s$ is a power of 2, it's possible to use
 $$n' = n \oplus s(s - 1)$$
+
+### Mirror along the diagonal
+
+To mirro along the diagonal we need to swap the row and the column, so
+$$n' = s(n \mod s) + n \div s$$
 
 ## Slides
 

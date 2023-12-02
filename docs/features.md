@@ -24,7 +24,6 @@
     - [x] ptn moves
       - [x] moves to
       - [x] moves from
-- [ ] opening db
 - [ ] engine
   - [ ] search
     - [ ] minimax with alpha-beta pruning
@@ -36,6 +35,7 @@
         - [x] zobrist
         - [ ] test collisions
       - [ ] rotations
+        - [x] rotate index
         - [ ] incremental rotation: i have 8 positions, each for one rotation, and i update all of them at the same time
           - pros: faster
           - cons: 4x space used
@@ -51,7 +51,6 @@
         - [ ] better when near opponent walls?
       - [ ] flat-win advantage
     - [ ] alpha0
-- [ ] engines tournament
 - [ ] tei
   - sources
     - https://github.com/official-stockfish/Stockfish/wiki/UCI-&-Commands#standard-commands

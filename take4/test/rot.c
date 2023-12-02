@@ -1,6 +1,6 @@
-#include "../src/rotations.h"
-
 #include <assert.h>
+
+#include "../src/rot.h"
 
 // 3x3 horizontal
 // 0 1 2    2 1 0
@@ -8,7 +8,10 @@
 // 6 7 8    8 7 6
 void test_h3() {
     int r[] = {2, 1, 0, 5, 4, 3, 8, 7, 6};
-    for (int i = 0; i < 9; i++) assert(mirror_h3(i) == r[i]);
+    for (int i = 0; i < 9; i++) {
+        assert(mirror_h3(i) == r[i]);
+        assert(mirror_h(i, 3) == r[i]);
+    }
 }
 
 // 4x4 horizontal
@@ -18,7 +21,10 @@ void test_h3() {
 // 12 13 14 15    15 14 13 12
 void test_h4() {
     int r[] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
-    for (int i = 0; i < 16; i++) assert(mirror_h4(i) == r[i]);
+    for (int i = 0; i < 16; i++) {
+        assert(mirror_h4(i) == r[i]);
+        assert(mirror_h(i, 4) == r[i]);
+    }
 }
 
 // 5x5 horizontal
@@ -30,7 +36,10 @@ void test_h4() {
 void test_h5() {
     int r[] = {4,  3,  2,  1,  0,  9,  8,  7,  6,  5,  14, 13, 12,
                11, 10, 19, 18, 17, 16, 15, 24, 23, 22, 21, 20};
-    for (int i = 0; i < 25; i++) assert(mirror_h5(i) == r[i]);
+    for (int i = 0; i < 25; i++) {
+        assert(mirror_h5(i) == r[i]);
+        assert(mirror_h(i, 5) == r[i]);
+    }
 }
 
 // 6x6 horizontal
@@ -43,7 +52,10 @@ void test_h5() {
 void test_h6() {
     int r[] = {5,  4,  3,  2,  1,  0,  11, 10, 9,  8,  7,  6,  17, 16, 15, 14, 13, 12,
                23, 22, 21, 20, 19, 18, 29, 28, 27, 26, 25, 24, 35, 34, 33, 32, 31, 30};
-    for (int i = 0; i < 36; i++) assert(mirror_h6(i) == r[i]);
+    for (int i = 0; i < 36; i++) {
+        assert(mirror_h6(i) == r[i]);
+        assert(mirror_h(i, 6) == r[i]);
+    }
 }
 
 // 7x7 horizontal
@@ -58,7 +70,10 @@ void test_h7() {
     int r[] = {6,  5,  4,  3,  2,  1,  0,  13, 12, 11, 10, 9,  8,  7,  20, 19, 18,
                17, 16, 15, 14, 27, 26, 25, 24, 23, 22, 21, 34, 33, 32, 31, 30, 29,
                28, 41, 40, 39, 38, 37, 36, 35, 48, 47, 46, 45, 44, 43, 42};
-    for (int i = 0; i < 49; i++) assert(mirror_h7(i) == r[i]);
+    for (int i = 0; i < 49; i++) {
+        assert(mirror_h7(i) == r[i]);
+        assert(mirror_h(i, 7) == r[i]);
+    }
 }
 
 // 8x8 horizontal
@@ -75,7 +90,10 @@ void test_h8() {
                23, 22, 21, 20, 19, 18, 17, 16, 31, 30, 29, 28, 27, 26, 25, 24,
                39, 38, 37, 36, 35, 34, 33, 32, 47, 46, 45, 44, 43, 42, 41, 40,
                55, 54, 53, 52, 51, 50, 49, 48, 63, 62, 61, 60, 59, 58, 57, 56};
-    for (int i = 0; i < 64; i++) assert(mirror_h8(i) == r[i]);
+    for (int i = 0; i < 64; i++) {
+        assert(mirror_h8(i) == r[i]);
+        assert(mirror_h(i, 8) == r[i]);
+    }
 }
 
 // 3x3 vertical
@@ -84,7 +102,10 @@ void test_h8() {
 // 6 7 8    0 1 2
 void test_v3() {
     int r[] = {6, 7, 8, 3, 4, 5, 0, 1, 2};
-    for (int i = 0; i < 9; i++) assert(mirror_v3(i) == r[i]);
+    for (int i = 0; i < 9; i++) {
+        assert(mirror_v3(i) == r[i]);
+        assert(mirror_v(i, 3) == r[i]);
+    }
 }
 
 // 4x4 vertical
@@ -94,7 +115,10 @@ void test_v3() {
 // 12 13 14 15     0  1  2  3
 void test_v4() {
     int r[] = {12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3};
-    for (int i = 0; i < 16; i++) assert(mirror_v4(i) == r[i]);
+    for (int i = 0; i < 16; i++) {
+        assert(mirror_v4(i) == r[i]);
+        assert(mirror_v(i, 4) == r[i]);
+    }
 }
 
 // 5x5 vertical
@@ -106,7 +130,10 @@ void test_v4() {
 void test_v5() {
     int r[] = {20, 21, 22, 23, 24, 15, 16, 17, 18, 19, 10, 11, 12,
                13, 14, 5,  6,  7,  8,  9,  0,  1,  2,  3,  4};
-    for (int i = 0; i < 25; i++) assert(mirror_v5(i) == r[i]);
+    for (int i = 0; i < 25; i++) {
+        assert(mirror_v5(i) == r[i]);
+        assert(mirror_v(i, 5) == r[i]);
+    }
 }
 
 // 6x6 vertical
@@ -119,7 +146,10 @@ void test_v5() {
 void test_v6() {
     int r[] = {30, 31, 32, 33, 34, 35, 24, 25, 26, 27, 28, 29, 18, 19, 20, 21, 22, 23,
                12, 13, 14, 15, 16, 17, 6,  7,  8,  9,  10, 11, 0,  1,  2,  3,  4,  5};
-    for (int i = 0; i < 36; i++) assert(mirror_v6(i) == r[i]);
+    for (int i = 0; i < 36; i++) {
+        assert(mirror_v6(i) == r[i]);
+        assert(mirror_v(i, 6) == r[i]);
+    }
 }
 
 // 7x7 vertical
@@ -134,7 +164,10 @@ void test_v7() {
     int r[] = {42, 43, 44, 45, 46, 47, 48, 35, 36, 37, 38, 39, 40, 41, 28, 29, 30,
                31, 32, 33, 34, 21, 22, 23, 24, 25, 26, 27, 14, 15, 16, 17, 18, 19,
                20, 7,  8,  9,  10, 11, 12, 13, 0,  1,  2,  3,  4,  5,  6};
-    for (int i = 0; i < 49; i++) assert(mirror_v7(i) == r[i]);
+    for (int i = 0; i < 49; i++) {
+        assert(mirror_v7(i) == r[i]);
+        assert(mirror_v(i, 7) == r[i]);
+    }
 }
 
 // 8x8 horizontal
@@ -151,7 +184,79 @@ void test_v8() {
                40, 41, 42, 43, 44, 45, 46, 47, 32, 33, 34, 35, 36, 37, 38, 39,
                24, 25, 26, 27, 28, 29, 30, 31, 16, 17, 18, 19, 20, 21, 22, 23,
                8,  9,  10, 11, 12, 13, 14, 15, 0,  1,  2,  3,  4,  5,  6,  7};
-    for (int i = 0; i < 56; i++) assert(mirror_v8(i) == r[i]);
+    for (int i = 0; i < 56; i++) {
+        assert(mirror_v8(i) == r[i]);
+        assert(mirror_v(i, 8) == r[i]);
+    }
+}
+
+// 3x3 diagonal
+//  0 1 2    0 3 6
+//  3 4 5 => 1 4 7
+//  6 7 8    2 5 8
+void test_d3() {
+    int r[] = {0, 3, 6, 1, 4, 7, 2, 5, 8};
+    for (int i = 0; i < 9; i++) {
+        assert(mirror_d3(i) == r[i]);
+        assert(mirror_d(i, 3) == r[i]);
+    }
+}
+
+// 4x4 diagonal
+//  0  1  2  3    0  4  8 12
+//  4  5  6  7 => 1  5  9 13
+//  8  9 10 11    2  6 10 14
+// 12 13 14 15    3  7 11 15
+void test_d4() {
+    int r[] = {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
+    for (int i = 0; i < 16; i++) {
+        assert(mirror_d4(i) == r[i]);
+        assert(mirror_d(i, 4) == r[i]);
+    }
+}
+
+// 8x8 diagonal
+//  0  1  2  3  4  5  6  7    0  8 16 24 32 40 48 56
+//  8  9 10 11 12 13 14 15    1  9 17 25 33 41 49 57
+// 16 17 18 19 20 21 22 23    2 10 18 26 34 42 50 58
+// 24 25 26 27 28 29 30 31 => 3 11 19 27 35 43 51 59
+// 32 33 34 35 36 37 38 39    4 12 20 28 36 44 52 60
+// 40 41 42 43 44 45 46 47    5 13 21 29 37 45 53 61
+// 48 49 50 51 52 53 54 55    6 14 22 30 38 46 54 62
+// 56 57 58 59 60 61 62 63    7 15 23 31 39 47 55 63
+void test_d8() {
+    int r[] = {0, 8,  16, 24, 32, 40, 48, 56, 1, 9,  17, 25, 33, 41, 49, 57,
+               2, 10, 18, 26, 34, 42, 50, 58, 3, 11, 19, 27, 35, 43, 51, 59,
+               4, 12, 20, 28, 36, 44, 52, 60, 5, 13, 21, 29, 37, 45, 53, 61,
+               6, 14, 22, 30, 38, 46, 54, 62, 7, 15, 23, 31, 39, 47, 55, 63};
+    for (int i = 0; i < 64; i++) {
+        assert(mirror_d8(i) == r[i]);
+        assert(mirror_d(i, 8) == r[i]);
+    }
+}
+
+// 3x3 clockwise rotation
+//  0 1 2    6 3 0
+//  3 4 5 -> 7 4 1
+//  6 7 8    8 5 2
+void test_rc() {
+    int r[] = {6, 3, 0, 7, 4, 1, 8, 5, 2};
+    for (int i = 0; i < 9; i++) {
+        assert(rotate_c3(i) == r[i]);
+        assert(rotate_c(i, 3) == r[i]);
+    }
+}
+
+// 3x3 anticlockwise rotation
+//  0 1 2    2 5 8
+//  3 4 5 -> 1 4 7
+//  6 7 8    0 3 6
+void test_ra() {
+    int r[] = {2, 5, 8, 1, 4, 7, 0, 3, 6};
+    for (int i = 0; i < 9; i++) {
+        assert(rotate_a3(i) == r[i]);
+        assert(rotate_a(i, 3) == r[i]);
+    }
 }
 
 int main() {
@@ -168,6 +273,29 @@ int main() {
     test_v6();
     test_v7();
     test_v8();
+
+    // TODO: should be enough to test one odd and one even (and the strange 8)
+    //       but maybe adding the others wouldn't hurt
+    test_d3();
+    test_d4();
+    // test_d5();
+    // test_d6();
+    // test_d7();
+    test_d8();
+
+    // TODO: this is hardly wrong, but anyway add tests
+    // rest_r3();
+    // rest_r4();
+    // rest_r5();
+    // rest_r6();
+    // rest_r7();
+    // rest_r8();
+
+    // composite tests
+    // one case should be enough
+    test_rc();
+    test_ra();
+    // test_a();
 
     return 0;
 }
