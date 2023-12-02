@@ -6,6 +6,9 @@
 #include "tak.h"
 
 // the poorest^tm hashmap ever
+// to solve the rotated hashes, each position is stored under the
+// "original" hash at index 0, and when searching if a position is already
+// stored we need to search each rotated hash
 typedef struct {
     // using directly the positions insthead of having a separate hmap_items
     // makes things easier, but negate the option of using separate chaining.
@@ -31,3 +34,7 @@ void hmap_free(hmap *hm);
 // handle stuff
 void hmap_set(hmap *hm, position p);
 position *hmap_get(hmap *hm, u64 hash);
+
+// check if a position is already in the tt
+// returns the position if found, NULL if not
+position *hmap_search(hmap *hm, position *p);

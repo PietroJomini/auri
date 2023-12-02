@@ -29,14 +29,13 @@
     - [ ] minimax with alpha-beta pruning
     - [ ] monte carlo
     - [ ] threaded
-    - [ ] transposition table
+    - [x] transposition table
       - [x] hashmap
-      - [ ] hash
+      - [x] hash
         - [x] zobrist
-        - [ ] test collisions
-      - [ ] rotations
+      - [x] rotations
         - [x] rotate index
-        - [ ] incremental rotation: i have 8 positions, each for one rotation, and i update all of them at the same time
+        - [x] incremental rotation: i have 8 positions, each for one rotation, and i update all of them at the same time. In the tt i can save just the "original" one and, at lookup, search for every hash.
           - pros: faster
           - cons: 4x space used
           - maybe i can only save 8 zobrist hash, and update them with the indexes rotated
@@ -75,3 +74,5 @@
 ## Todos
 - [ ] test `unsigned __int128`, both in https://www.chessprogramming.org/10x12_Board and in the stacks to avoid overflows in the `8s`
 - [ ] solve empty buckets in full hashmap
+- [ ] test collisions in zobrist and find a good (?) seed
+- [ ] test having static larger buckets and no probing (like stockfish) in the tt
