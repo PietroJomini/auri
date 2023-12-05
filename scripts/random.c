@@ -5,8 +5,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "../take4/src/notation.h"
-#include "../take4/src/tak.h"
+#include "../tak/src/notation.h"
+#include "../tak/src/tak.h"
 
 #define DEPTH_MIN 5
 #define DEPTH_MAX 100

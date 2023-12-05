@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../take4/src/notation.h"
-#include "../take4/src/tak.h"
+#include "../tak/src/notation.h"
+#include "../tak/src/tak.h"
 
 #define DEFAULT_SIZE 6
 #define DEFAULT_DEPTH 3
@@ -23,7 +23,7 @@ void perftd(position p, int depth, zobrist_data *zd) {
         nodes += nnodes;
 
         move2ptn(ptn, buffer[i], p.size, PTN_STD);
-        printf("%s: %ld\n", ptn, nnodes);
+        printf("%d. %s: %ld\n", i, ptn, nnodes);
     }
 
     printf("%ld\n", nodes);

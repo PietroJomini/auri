@@ -86,3 +86,7 @@ int move2ptn(char *buffer, move m, u8 size, ptn_lexicon lexicon);
 // parse a ptn string into a move
 // the input is expected to be correct
 move ptn2move(char *ptn, u8 size, player stp, ptn_lexicon lexicon);
+
+// apply a list of ptn moves to a position
+position ptn2position(position p, char **ptn, int n, ptn_lexicon lexicon,
+                      zobrist_data *zd);

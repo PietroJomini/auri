@@ -27,7 +27,6 @@
 - [ ] engine
   - [ ] search
     - [ ] minimax with alpha-beta pruning
-    - [ ] monte carlo
     - [ ] threaded
     - [x] transposition table
       - [x] hashmap
@@ -49,7 +48,9 @@
         - [ ] better in the center?
         - [ ] better when near opponent walls?
       - [ ] flat-win advantage
-    - [ ] alpha0
+    - [ ] nnue
+      - [ ] https://github.com/official-stockfish/nnue-pytorch/blob/master/docs/nnue.md
+  - [ ] alpha0?
 - [ ] tei
   - sources
     - https://github.com/official-stockfish/Stockfish/wiki/UCI-&-Commands#standard-commands

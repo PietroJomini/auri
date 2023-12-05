@@ -248,7 +248,7 @@ move ptn2move(char *ptn, u8 size, player stp, ptn_lexicon lexicon) {
 
         // count
         int count = 1;
-        if (*ptn >= '2' && *ptn <= '8') count = *ptn++ - '0';
+        if (*ptn >= '1' && *ptn <= '8') count = *ptn++ - '0';
 
         // square, direction
         int row = 0, column = 0, d = 0;
@@ -280,4 +280,11 @@ move ptn2move(char *ptn, u8 size, player stp, ptn_lexicon lexicon) {
 
         return (move){.s = s, .t = SLIDE};
     }
+}
+
+position ptn2position(position p, char **ptn, int n, ptn_lexicon lexicon,
+                      zobrist_data *zd) {
+    for (int i = 0; i < n; i++)
+        p = do_move(p, ptn2move(ptn[i], p.size, p.stp, lexicon), zd);
+    return p;
 }
