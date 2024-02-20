@@ -1,7 +1,0 @@
-[package]
-name = "topaz_perft"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-topaz-tak = { git = "https://github.com/Jakur/topaz-tak.git" }

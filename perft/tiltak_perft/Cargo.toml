@@ -1,9 +1,0 @@
-[package]
-name = "tiltak_perft"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-const-random = "0.1.15"
-pgn-traits = "0.4.1"
-tiltak = { git = "https://github.com/MortenLohne/tiltak.git" }

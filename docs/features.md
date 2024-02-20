@@ -33,11 +33,6 @@
       - [x] hash
         - [x] zobrist
       - [x] rotations
-        - [x] rotate index
-        - [x] incremental rotation: i have 8 positions, each for one rotation, and i update all of them at the same time. In the tt i can save just the "original" one and, at lookup, search for every hash.
-          - pros: faster
-          - cons: 4x space used
-          - maybe i can only save 8 zobrist hash, and update them with the indexes rotated
   - [ ] evaluation
     - [ ] hand-made euristic
       - [ ] distance to road
@@ -50,30 +45,12 @@
       - [ ] flat-win advantage
     - [ ] nnue
       - [ ] https://github.com/official-stockfish/nnue-pytorch/blob/master/docs/nnue.md
-  - [ ] alpha0?
 - [ ] tei
-  - sources
-    - https://github.com/official-stockfish/Stockfish/wiki/UCI-&-Commands#standard-commands
-    - https://github.com/MortenLohne/tiltak/blob/master/README.md
-  - [ ] more than one thread? one for input / control, one for the engine
-  - [ ] commands
-    - [x] quit
-    - [ ] tei
-    - [ ] position [tps \<tpsstring\> | startpos \<size\>] [moves \<move 1\> ... \<move n\>]
-    - [x] print
-    - [x] perft[d] [\<depth\>]
-    - [ ] move \<move 1\> ... \<move n\>
-- [ ] perft analysis
-  - [x] scripts for engines
-    - [x] auri
-    - [x] topaz
-    - [x] tiltak
-  - [ ] results analysis
-    - [ ] benchmark time to search
-    - [ ] nodes amount deltas between other engines and auri
+- [ ] perft analysis against other mainstream engines
+  - [ ] "correctness" tests
+  - [ ] benchmarcks
 
 ## Todos
 - [ ] test `unsigned __int128`, both in https://www.chessprogramming.org/10x12_Board and in the stacks to avoid overflows in the `8s`
-- [ ] solve empty buckets in full hashmap
 - [ ] test collisions in zobrist and find a good (?) seed
 - [ ] test having static larger buckets and no probing (like stockfish) in the tt

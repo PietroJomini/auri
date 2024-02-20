@@ -1,21 +1,20 @@
 # c compiler
 CC = gcc
-CFLAGS = -std=c2x -O2
+CFLAGS = -std=c2x
 CFLAGS += -Wextra -Wall -Wpedantic
 
 # dirs
 OUT = ./bin
-SRC = $(wildcard ../tak/src/*.c) $(wildcard ../tak/base/*.c)
-INC = $(wildcard ../tak/src/*.h) $(wildcard ../tak/base/*.h)
-TARGETS = $(wildcard ./*.c)
+TARGETS = $(wildcard *.c)
 BINS = $(addprefix $(OUT)/,$(basename $(TARGETS)))
+LIB = $(wildcard ../lib/*.h)
 
 .PHONY: all clean
 
 all: $(BINS)
 
-$(OUT)/%: %.c $(SRC) $(INC)
-	$(CC) -o $@ $(SRC) $< $(CFLAGS)
+$(OUT)/%: %.c $(LIB)
+	$(CC) -o $@ $< $(CFLAGS)
 
 clean:
 	rm -rf $(OUT)/*

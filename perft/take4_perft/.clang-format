@@ -1,5 +1,0 @@
-ColumnLimit: 90
-IndentWidth: 4
-BasedOnStyle: Google
-AllowShortCaseLabelsOnASingleLine: true
-AllowShortIfStatementsOnASingleLine: AllIfsAndElse

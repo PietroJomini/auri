@@ -5,8 +5,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "../tak/src/notation.h"
-#include "../tak/src/tak.h"
+#define TAKLIB_IMPLEMENTATION
+#define TAKLIB_NOHASH
+#include "../lib/tak.h"
+#include "../lib/ptn.h"
 
 #define DEPTH_MIN 5
 #define DEPTH_MAX 100
@@ -15,18 +17,17 @@
 
 int randint(int a, int b) { return a + rand() % (b - a + 1); }
 
-position random_position(int size, int depth, slides_lt *slt) {
-    position p = new_position(size), np;
-    zobrist_data zd = zobrist_fill();
-    move buffer[500 + PLACEMENTS_MAX_AMOUNT];
+tak_position random_position(int size, int depth, tak_slt *slt, tak_zobrist_data *zd) {
+    tak_position p = tak_newposition(size), np;
+    tak_move buffer[TAK_MAX_MOVES];
     int t;
 
     while (--depth > 0) {
-        t = search_moves(buffer, &p, slt);
-        np = do_move(p, buffer[randint(0, t - 1)], &zd);
+        t = tak_search(buffer, &p, slt);
+        np = tak_do(p, buffer[randint(0, t - 1)], zd);
 
         // check if the game is ended
-        if (check_ending(&np, 0).ended) return p;
+        if (tak_check_ending(&np, 0).ended) return p;
         else p = np;
     }
 
@@ -37,12 +38,12 @@ int main(int argc, char **argv) {
     int c, depth_min = DEPTH_MIN, depth_max = DEPTH_MAX, size = DEFAULT_SIZE,
            amount = DEFAULT_AMOUNT;
 
-    while ((c = getopt(argc, argv, "m:M:s:a:")) != -1) {
+    while ((c = getopt(argc, argv, "m:M:s:n:")) != -1) {
         switch (c) {
             case 'm': depth_min = atoi(optarg); break;
             case 'M': depth_max = atoi(optarg); break;
             case 's': size = atoi(optarg); break;
-            case 'a': amount = atoi(optarg); break;
+            case 'n': amount = atoi(optarg); break;
             case '?': exit(EXIT_FAILURE);
         }
     }
@@ -52,12 +53,13 @@ int main(int argc, char **argv) {
     if (amount < 1) amount = 1;
 
     srand(time(NULL));
-    slides_lt slt = slt_fill();
+    tak_slt slt = tak_slt_fill();
+    tak_zobrist_data zd = tak_zd_fill();
     char tps[TPS_MAX_LENGTH];
 
     for (int i = 0; i < amount; i++) {
-        position p = random_position(size, randint(depth_min, depth_max), &slt);
-        position2tps(tps, p, TPS_STD);
+        tak_position p = random_position(size, randint(depth_min, depth_max), &slt, &zd);
+        tps_encode(tps, p, TPS_STD);
         printf("%s\n", tps);
     }
 

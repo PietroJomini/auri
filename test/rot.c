@@ -1,6 +1,7 @@
 #include <assert.h>
 
-#include "../src/rot.h"
+#define TAKLIB_IMPLEMENTATION
+#include "../lib/tak.h"
 
 // 3x3 horizontal
 // 0 1 2    2 1 0
@@ -9,8 +10,7 @@
 void test_h3() {
     int r[] = {2, 1, 0, 5, 4, 3, 8, 7, 6};
     for (int i = 0; i < 9; i++) {
-        assert(mirror_h3(i) == r[i]);
-        assert(mirror_h(i, 3) == r[i]);
+        assert(tak_mirror_h(i, 3) == r[i]);
     }
 }
 
@@ -22,8 +22,7 @@ void test_h3() {
 void test_h4() {
     int r[] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
     for (int i = 0; i < 16; i++) {
-        assert(mirror_h4(i) == r[i]);
-        assert(mirror_h(i, 4) == r[i]);
+        assert(tak_mirror_h(i, 4) == r[i]);
     }
 }
 
@@ -37,8 +36,7 @@ void test_h5() {
     int r[] = {4,  3,  2,  1,  0,  9,  8,  7,  6,  5,  14, 13, 12,
                11, 10, 19, 18, 17, 16, 15, 24, 23, 22, 21, 20};
     for (int i = 0; i < 25; i++) {
-        assert(mirror_h5(i) == r[i]);
-        assert(mirror_h(i, 5) == r[i]);
+        assert(tak_mirror_h(i, 5) == r[i]);
     }
 }
 
@@ -53,8 +51,7 @@ void test_h6() {
     int r[] = {5,  4,  3,  2,  1,  0,  11, 10, 9,  8,  7,  6,  17, 16, 15, 14, 13, 12,
                23, 22, 21, 20, 19, 18, 29, 28, 27, 26, 25, 24, 35, 34, 33, 32, 31, 30};
     for (int i = 0; i < 36; i++) {
-        assert(mirror_h6(i) == r[i]);
-        assert(mirror_h(i, 6) == r[i]);
+        assert(tak_mirror_h(i, 6) == r[i]);
     }
 }
 
@@ -71,8 +68,7 @@ void test_h7() {
                17, 16, 15, 14, 27, 26, 25, 24, 23, 22, 21, 34, 33, 32, 31, 30, 29,
                28, 41, 40, 39, 38, 37, 36, 35, 48, 47, 46, 45, 44, 43, 42};
     for (int i = 0; i < 49; i++) {
-        assert(mirror_h7(i) == r[i]);
-        assert(mirror_h(i, 7) == r[i]);
+        assert(tak_mirror_h(i, 7) == r[i]);
     }
 }
 
@@ -91,8 +87,7 @@ void test_h8() {
                39, 38, 37, 36, 35, 34, 33, 32, 47, 46, 45, 44, 43, 42, 41, 40,
                55, 54, 53, 52, 51, 50, 49, 48, 63, 62, 61, 60, 59, 58, 57, 56};
     for (int i = 0; i < 64; i++) {
-        assert(mirror_h8(i) == r[i]);
-        assert(mirror_h(i, 8) == r[i]);
+        assert(tak_mirror_h(i, 8) == r[i]);
     }
 }
 
@@ -103,8 +98,7 @@ void test_h8() {
 void test_v3() {
     int r[] = {6, 7, 8, 3, 4, 5, 0, 1, 2};
     for (int i = 0; i < 9; i++) {
-        assert(mirror_v3(i) == r[i]);
-        assert(mirror_v(i, 3) == r[i]);
+        assert(tak_mirror_v(i, 3) == r[i]);
     }
 }
 
@@ -116,8 +110,7 @@ void test_v3() {
 void test_v4() {
     int r[] = {12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3};
     for (int i = 0; i < 16; i++) {
-        assert(mirror_v4(i) == r[i]);
-        assert(mirror_v(i, 4) == r[i]);
+        assert(tak_mirror_v(i, 4) == r[i]);
     }
 }
 
@@ -131,8 +124,7 @@ void test_v5() {
     int r[] = {20, 21, 22, 23, 24, 15, 16, 17, 18, 19, 10, 11, 12,
                13, 14, 5,  6,  7,  8,  9,  0,  1,  2,  3,  4};
     for (int i = 0; i < 25; i++) {
-        assert(mirror_v5(i) == r[i]);
-        assert(mirror_v(i, 5) == r[i]);
+        assert(tak_mirror_v(i, 5) == r[i]);
     }
 }
 
@@ -147,8 +139,7 @@ void test_v6() {
     int r[] = {30, 31, 32, 33, 34, 35, 24, 25, 26, 27, 28, 29, 18, 19, 20, 21, 22, 23,
                12, 13, 14, 15, 16, 17, 6,  7,  8,  9,  10, 11, 0,  1,  2,  3,  4,  5};
     for (int i = 0; i < 36; i++) {
-        assert(mirror_v6(i) == r[i]);
-        assert(mirror_v(i, 6) == r[i]);
+        assert(tak_mirror_v(i, 6) == r[i]);
     }
 }
 
@@ -165,8 +156,7 @@ void test_v7() {
                31, 32, 33, 34, 21, 22, 23, 24, 25, 26, 27, 14, 15, 16, 17, 18, 19,
                20, 7,  8,  9,  10, 11, 12, 13, 0,  1,  2,  3,  4,  5,  6};
     for (int i = 0; i < 49; i++) {
-        assert(mirror_v7(i) == r[i]);
-        assert(mirror_v(i, 7) == r[i]);
+        assert(tak_mirror_v(i, 7) == r[i]);
     }
 }
 
@@ -185,8 +175,7 @@ void test_v8() {
                24, 25, 26, 27, 28, 29, 30, 31, 16, 17, 18, 19, 20, 21, 22, 23,
                8,  9,  10, 11, 12, 13, 14, 15, 0,  1,  2,  3,  4,  5,  6,  7};
     for (int i = 0; i < 56; i++) {
-        assert(mirror_v8(i) == r[i]);
-        assert(mirror_v(i, 8) == r[i]);
+        assert(tak_mirror_v(i, 8) == r[i]);
     }
 }
 
@@ -197,8 +186,7 @@ void test_v8() {
 void test_d3() {
     int r[] = {0, 3, 6, 1, 4, 7, 2, 5, 8};
     for (int i = 0; i < 9; i++) {
-        assert(mirror_d3(i) == r[i]);
-        assert(mirror_d(i, 3) == r[i]);
+        assert(tak_mirror_d(i, 3) == r[i]);
     }
 }
 
@@ -210,8 +198,7 @@ void test_d3() {
 void test_d4() {
     int r[] = {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
     for (int i = 0; i < 16; i++) {
-        assert(mirror_d4(i) == r[i]);
-        assert(mirror_d(i, 4) == r[i]);
+        assert(tak_mirror_d(i, 4) == r[i]);
     }
 }
 
@@ -230,8 +217,7 @@ void test_d8() {
                4, 12, 20, 28, 36, 44, 52, 60, 5, 13, 21, 29, 37, 45, 53, 61,
                6, 14, 22, 30, 38, 46, 54, 62, 7, 15, 23, 31, 39, 47, 55, 63};
     for (int i = 0; i < 64; i++) {
-        assert(mirror_d8(i) == r[i]);
-        assert(mirror_d(i, 8) == r[i]);
+        assert(tak_mirror_d(i, 8) == r[i]);
     }
 }
 
@@ -242,8 +228,7 @@ void test_d8() {
 void test_rc() {
     int r[] = {6, 3, 0, 7, 4, 1, 8, 5, 2};
     for (int i = 0; i < 9; i++) {
-        assert(rotate_c3(i) == r[i]);
-        assert(rotate_c(i, 3) == r[i]);
+        assert(tak_rotate_c(i, 3) == r[i]);
     }
 }
 
@@ -254,8 +239,7 @@ void test_rc() {
 void test_ra() {
     int r[] = {2, 5, 8, 1, 4, 7, 0, 3, 6};
     for (int i = 0; i < 9; i++) {
-        assert(rotate_a3(i) == r[i]);
-        assert(rotate_a(i, 3) == r[i]);
+        assert(tak_rotate_a(i, 3) == r[i]);
     }
 }
 
