@@ -24,6 +24,7 @@
     - [x] ptn moves
       - [x] moves to
       - [x] moves from
+    - [ ] optional legality checks
 - [ ] engine
   - [ ] search
     - [ ] minimax with alpha-beta pruning
@@ -46,6 +47,13 @@
     - [ ] nnue
       - [ ] https://github.com/official-stockfish/nnue-pytorch/blob/master/docs/nnue.md
 - [ ] tei
+  - [x] simple interface
+  - [ ] aliases (eg. `q` does the same as `quit`)
+  - [ ] history? navigable with arrows, saved to a file...
+  - [ ] better ui (help, errors, etc)
+    - [ ] check if invoked from terminal or from another program, and modify output based on that
+  - [ ] check standards with other mainstream engines
+  - [ ] two threads? maybe i'll need it when i'll have actual engine features, like thinking
 - [ ] perft analysis against other mainstream engines
   - [ ] "correctness" tests
   - [ ] benchmarcks

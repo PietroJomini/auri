@@ -9,9 +9,15 @@
 
 ## tei interface
 
-`auri` exposes a minimalistic `tei` interface, accessible by compiling the file `auri.c`. Supported commands are:
-- [x] `help'
+`auri` (accessible by compiling the file `auri.c`) exposes a minimalistic `tei` interface. Supported commands are:
+- [x] `help`
 - [x] `quit`
+- [x] `print`: pretty print the position
+- [x] `tps <tps>`: load a tps string
+- [x] `new <size>`: load an empty position of given size
+- [x] `move <...moves>`: apply moves to the position
+- [x] `perft <depth>`: [perft](https://www.chessprogramming.org/Perft)
+- [x] `perftd <depth>`: [divide perft](https://www.chessprogramming.org/Perft#Divide)
 
 ## taklib
 
