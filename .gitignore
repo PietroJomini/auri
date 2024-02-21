@@ -1,3 +1,11 @@
 # c stuff
 bin
 _dev.*
+
+# I just use clang for linting and code completion,
+# but compile with gcc, so I have to disable some errors related to 
+# gcc's c extensions (eg. nested functions)
+.clangd
+
+# target executable
+auri
