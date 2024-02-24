@@ -283,7 +283,9 @@ const ptn_lexicon PTN_STD = {
 
 tak_move ptn_parse(char *ptn, const tak_u8 size, const tak_player stp,
                    const ptn_lexicon lexicon) {
-    tak_move m;
+    // not setting it to `0` was brutally destroying parsing with gcc optimization
+    // so yeah, in the future better remember to 0 stuff
+    tak_move m = {0};
 
     if (strlen(ptn) == 2 || *ptn == lexicon.cap || *ptn == lexicon.wall) {
         m.type = TAK_PLACEMENT;

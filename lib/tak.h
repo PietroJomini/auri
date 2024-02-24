@@ -118,14 +118,6 @@ typedef struct {
     tak_u64 walls;
     tak_u64 caps;
 
-    // zobrist hash
-    // TODO: somehow if i place this declaration "lower" in the struct updating
-    // the fift element in `tak_zobrist_stack` messes up the walls bitboard (?) (or just
-    // segfaults????) wtf? it somehow also seems that having the hash in the struct fixes
-    // a perft test??? this plus the -On breaking stuff seems like a unique big problem
-    // that needs quite the gcc dive
-    tak_u64 hash[TAK_ROTATIONS_AMOUNT];
-
     // stacks
     // stacks are sorted with the highes piece in the lsb
     tak_u64 stacks[64];
@@ -134,6 +126,9 @@ typedef struct {
     // remaining pieces
     // { .0 = white, .i = black } { .0 = flats, .1 = caps }
     tak_u8 reserves[2][2];
+
+    // zobrist hash
+    tak_u64 hash[TAK_ROTATIONS_AMOUNT];
 } tak_position;
 
 // create a new, empty position
