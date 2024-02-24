@@ -24,6 +24,7 @@
     - [x] ptn moves
       - [x] moves to
       - [x] moves from
+    - [ ] ptn load whole game from .ptn file (or string | stream)
     - [ ] optional legality checks
 - [ ] engine
   - [ ] search
