@@ -93,108 +93,115 @@ void tei_loop(int n, tei_command *commands) {
                 for (int i = 0; i < n; i++) printf("- %s\n", commands[i].name);
                 break;
 
+            // wrong argument count
+            case TEI_W_ARGC: printf("wrong argument count\n"); break;
+
             default: break;
         }
     }
 }
 
-TEI_ACTION(help, { return TEI_HELP; })
-TEI_ACTION(quit, { return TEI_QUIT; })
+int tei_argce_check(tei_argce argce, int argc) {
+    switch (argce.type) {
+        case TEI_ARGC_ANY: return 0;
+        case TEI_ARGC_EXACT:
+            if (argce.exact == argc) return 0;
+            else break;
+        case TEI_ARGC_MIN:
+            if (argce.min <= argc) return 0;
+            else break;
+        case TEI_ARGC_RANGE:
+            if (argce.min <= argc && argc <= argce.max) return 0;
+            else break;
+    }
+
+    return 1;
+}
+
+TEI_ACTION(help, ANY, { return TEI_HELP; })
+TEI_ACTION(quit, ANY, { return TEI_QUIT; })
 
 // print
-TEI_ACTION(print, {
-    if (argc > 1) {
-        printf("wrong number of arguments: at most 1 required\n");
-        return TEI_OK;
-    }
-
-    if (argc == 0) tak_print(pl->position);
-    else {
-        if (strcmp(argv[0], "pretty") == 0) tak_print(pl->position);
-        else if (strcmp(argv[0], "tps") == 0) {
-            char tps[TPS_MAX_LENGTH];
-            tps_encode(tps, pl->position, TPS_STD);
-            printf("%s\n", tps);
-        } else printf("option \"%s\" not recognised\n", argv[0]);
-    }
-})
+TEI_ACTION(
+    print, RANGE,
+    {
+        // TODO: change the default based on the verbosity level
+        if (argc == 0) tak_print(pl->position);
+        else {
+            if (strcmp(argv[0], "pretty") == 0) tak_print(pl->position);
+            else if (strcmp(argv[0], "tps") == 0) {
+                char tps[TPS_MAX_LENGTH];
+                tps_encode(tps, pl->position, TPS_STD);
+                printf("%s\n", tps);
+            } else printf("option \"%s\" not recognised\n", argv[0]);
+        }
+    },
+    .max = 1)
 
 // new
-TEI_ACTION(new, {
-    if (argc != 1) {
-        printf("wrong number of arguments: 1 required\n");
-        return TEI_OK;
-    }
-
-    int size = atoi(argv[0]);
-    if (size < 3 || size > 8)
-        printf("size %d not supported: range [3, 9] required\n", size);
-    else pl->position = tak_newposition(size);
-})
+TEI_ACTION(
+    new, EXACT,
+    {
+        int size = atoi(argv[0]);
+        if (size < 3 || size > 8)
+            printf("size %d not supported: range [3, 9] required\n", size);
+        else pl->position = tak_newposition(size);
+    },
+    1)
 
 // tps
-TEI_ACTION(tps, {
-    if (argc != 3) {
-        printf("wrong number of arguments: 3 required\n");
-        return TEI_OK;
-    }
+TEI_ACTION(
+    tps, EXACT,
+    {
+        // compose tps chunks into single string
+        char tps[TPS_MAX_LENGTH];
+        snprintf(tps, TPS_MAX_LENGTH, "%s %s %s", argv[0], argv[1], argv[2]);
 
-    // compose tps chunks into single string
-    char tps[TPS_MAX_LENGTH];
-    snprintf(tps, TPS_MAX_LENGTH, "%s %s %s", argv[0], argv[1], argv[2]);
-
-    // load the new position
-    pl->position = tps_parse(tps, TPS_STD, &pl->zd);
-})
+        // load the new position
+        pl->position = tps_parse(tps, TPS_STD, &pl->zd);
+    },
+    3)
 
 // move
-TEI_ACTION(move, {
-    if (argc <= 0) {
-        printf("wrong number of arguments: at least 1 required\n");
-        return TEI_OK;
-    }
-
-    pl->position = ptn_apply(pl->position, argv, argc, PTN_STD, &pl->zd);
-})
+// TODO: if i have 0 argc it just does nothing, how strict do i want to be?
+TEI_ACTION(
+    move, MIN, { pl->position = ptn_apply(pl->position, argv, argc, PTN_STD, &pl->zd); },
+    1)
 
 // perft
-TEI_ACTION(perft, {
-    if (argc != 1) {
-        printf("wrong number of arguments: 1 required\n");
-        return TEI_OK;
-    }
-
-    int depth = atoi(argv[0]);
-    printf("%lu\n", tak_perft(pl->position, depth, &pl->slt, &pl->zd));
-})
+TEI_ACTION(
+    perft, EXACT,
+    {
+        int depth = atoi(argv[0]);
+        printf("%lu\n", tak_perft(pl->position, depth, &pl->slt, &pl->zd));
+    },
+    1)
 
 // perftd
-TEI_ACTION(perftd, {
-    if (argc != 1) {
-        printf("wrong number of arguments: 1 required\n");
-        return TEI_OK;
-    }
+TEI_ACTION(
+    perftd, EXACT,
+    {
+        int depth = atoi(argv[0]);
+        tak_u64 nodes = 0;   // dunno why, but putting the two declarations in one line
+        tak_u64 nnodes = 0;  // breaks the macro (c wtf n. too much at this point lol)
+        tak_move buffer[TAK_MAX_MOVES];
+        int n = tak_search(buffer, &pl->position, &pl->slt);
+        char ptn[PTN_MAX_MOVE_LENGTH];
 
-    int depth = atoi(argv[0]);
-    tak_u64 nodes = 0;   // dunno why, but putting the two declarations in one line
-    tak_u64 nnodes = 0;  // breaks the macro (c wtf n. too much at this point lol)
-    tak_move buffer[TAK_MAX_MOVES];
-    int n = tak_search(buffer, &pl->position, &pl->slt);
-    char ptn[PTN_MAX_MOVE_LENGTH];
+        for (int i = 0; i < n; i++) {
+            nnodes = tak_perft(tak_do(pl->position, buffer[i], &pl->zd), depth - 1,
+                               &pl->slt, &pl->zd);
+            nodes += nnodes;
 
-    for (int i = 0; i < n; i++) {
-        nnodes = tak_perft(tak_do(pl->position, buffer[i], &pl->zd), depth - 1, &pl->slt,
-                           &pl->zd);
-        nodes += nnodes;
+            ptn_encode(ptn, buffer[i], pl->position.size, PTN_STD);
+            printf("\n%d. %s: %ld", i, ptn, nnodes);
+        }
 
-        ptn_encode(ptn, buffer[i], pl->position.size, PTN_STD);
-        printf("\n%d. %s: %ld", i, ptn, nnodes);
-    }
+        printf("\n\nnodes searched: %ld\n", nodes);
+    },
+    1)
 
-    printf("\n\nnodes searched: %ld\n", nodes);
-})
-
-TEI_ACTION(random, {
+TEI_ACTION(random, ANY, {
     int c;
     int m = TEI_RANDOM_DEFAULT_MIN;
     int M = TEI_RANDOM_DEFAULT_MAX;

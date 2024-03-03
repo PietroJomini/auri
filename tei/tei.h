@@ -29,7 +29,8 @@ typedef enum {
     TEI_QUIT,  // the loop should quit
 
     // warnings
-    TEI_HELP,  // print the commands list
+    TEI_HELP,    // print the commands list
+    TEI_W_ARGC,  // wrong argc
 } tei_status;
 
 // payload passed to and from commands
@@ -54,11 +55,38 @@ typedef struct {
     char *name;
 } tei_command;
 
+// expected amount of arguments flags
+typedef enum {
+    TEI_ARGC_ANY,    // don't check
+    TEI_ARGC_EXACT,  // expec exact amount
+    TEI_ARGC_MIN,    // expect argc to be more than
+    TEI_ARGC_RANGE,  // expect argc in range
+} tei_argce_t;
+
+// expected amount of arguments data
+typedef struct {
+    tei_argce_t type;
+    union {
+        int exact;  // TEI_ARGC_EXACT
+        struct {    // TEI_ARGC_RANGE
+            int min;
+            int max;
+        };
+    };
+} tei_argce;
+
+// check tei_argcs
+int tei_argce_check(tei_argce argce, int argc);
+
 // create a tei action
-#define TEI_ACTION(NAME, BODY)                  \
-    tei_status _tei_##NAME(TEI_ACTION_PARAMS) { \
-        BODY;                                   \
-        return TEI_OK;                          \
+#define TEI_ACTION(NAME, ARGCE_T, BODY, ...)                                    \
+    tei_status _tei_##NAME(TEI_ACTION_PARAMS) {                                 \
+        /*check argc*/                                                          \
+        tei_argce argce = (tei_argce){.type = TEI_ARGC_##ARGCE_T, __VA_ARGS__}; \
+        if (tei_argce_check(argce, argc)) return TEI_W_ARGC;                    \
+                                                                                \
+        BODY;                                                                   \
+        return TEI_OK; /*if BODY doesn't return, default to TEI_OK*/            \
     }
 
 // create a tei command
