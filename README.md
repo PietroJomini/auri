@@ -9,7 +9,7 @@
 
 ## tei interface
 
-`auri` (accessible by compiling the file `auri.c`) exposes a minimalistic `tei` interface. Supported commands are:
+`/tei` exposes a minimalistic `tei` interface, that can be compiled with `make tei` (resulting in the bin `/bin/tei`). Supported commands are:
 
 | option   | arguments                    | description                                                                                                                                                                                   |
 | -------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -19,6 +19,7 @@
 | `new`    | `<size>`                     | set the current position as a new position of size `size`                                                                                                                                     |
 | `tps`    | `<tps>`                      | parse the given tps string and into the current position                                                                                                                                      |
 | `move`   | `[<move 1> ... <move n>]`    | apply a series of [ptn](https://ustak.org/portable-tak-notation/)-encoded moves at the current position                                                                                       |
+| `search` | `[spread\|placement\|all]`   | search legal moves in the current position. <br> no arguments defaults to `all`                                                                                                               |
 | `perft`  | `<depth>`                    | [perft](https://www.chessprogramming.org/Perft)                                                                                                                                               |
 | `perftd` | `<depth>`                    | [divide perft](https://www.chessprogramming.org/Perft#Divide)                                                                                                                                 |
 | `random` | `[-n <N>] [-m <N>] [-M <N>]` | generate random non-terminated positions, starting from the current one<br>`-n <N>`: amount of position to generate<br>`-m <N>`: min randomization depth<br>`-M <N>`: max randomization depth |
@@ -27,8 +28,8 @@
 
 `tei` now replace the old `scripts`, as it can be used like
 ```bash
-echo "random -n 10" | auri
-auri <<< "move a1 b2" <<< "print tps"
+echo "random -n 10" | tei
+tei <<< "move a1 b2" <<< "print tps"
 ```
 
 ## taklib
