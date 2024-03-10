@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "../lib/ptn.h"
 #include "../lib/tak.h"
@@ -42,21 +43,6 @@ typedef struct {
     tak_slt slt;
 } tei_payload;
 
-// tei action params
-#define TEI_ACTION_PARAMS                                       \
-    tei_payload *pl,  /*data payload*/                          \
-        int argc,     /*command-specific argc*/                 \
-        char **argv,  /*command-specific argv*/                 \
-        int argc_o,   /*original argc (included the arg name)*/ \
-        char **argv_o /*original argv (included the arg name)*/
-
-// defines a single callable command
-typedef struct {
-    // passing also the original argc and argv (the second set) allows to use `getopt`
-    tei_status (*action)(TEI_ACTION_PARAMS);
-    char *name;
-} tei_command;
-
 // expected amount of arguments flags
 typedef enum {
     TEI_ARGC_ANY,    // don't check
@@ -77,23 +63,36 @@ typedef struct {
     };
 } tei_argce;
 
-// check tei_argcs
-int tei_argce_check(tei_argce argce, int argc);
+// tei action params
+// passing also the original argc and argv (the second set) allows to use `getopt`
+#define TEI_ACTION_PARAMS                                       \
+    tei_payload *pl,  /*data payload*/                          \
+        int argc,     /*command-specific argc*/                 \
+        char **argv,  /*command-specific argv*/                 \
+        int argc_o,   /*original argc (included the arg name)*/ \
+        char **argv_o /*original argv (included the arg name)*/
+
+// defines a single callable command
+typedef struct {
+    tei_status (*action)(TEI_ACTION_PARAMS);
+    tei_argce argce;
+    char *name;
+} tei_command;
 
 // create a tei action
-#define TEI_ACTION(NAME, ARGCE_T, BODY, ...)                                    \
-    tei_status _tei_##NAME(TEI_ACTION_PARAMS) {                                 \
-        /*check argc*/                                                          \
-        tei_argce argce = (tei_argce){.type = TEI_ARGC_##ARGCE_T, __VA_ARGS__}; \
-        if (tei_argce_check(argce, argc)) return TEI_W_ARGC;                    \
-                                                                                \
-        BODY;                                                                   \
-        return TEI_OK; /*if BODY doesn't return, default to TEI_OK*/            \
+#define TEI_ACTION(NAME, BODY)                                       \
+    tei_status _tei_##NAME(TEI_ACTION_PARAMS) {                      \
+        BODY;                                                        \
+        return TEI_OK; /*if BODY doesn't return, default to TEI_OK*/ \
     }
 
 // create a tei command
-#define TEI_CMD(NAME) \
-    { .action = &_tei_##NAME, .name = #NAME }
+#define TEI_CMD(NAME, ARGCE_T, ...)                                   \
+    {                                                                 \
+        .action = &_tei_##NAME, .name = #NAME, .argce = (tei_argce) { \
+            .type = TEI_ARGC_##ARGCE_T, __VA_ARGS__                   \
+        }                                                             \
+    }
 
 // main tei IO loop
 void tei_loop(int n, tei_command *commands);

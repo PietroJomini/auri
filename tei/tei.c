@@ -22,6 +22,9 @@ cli options
 - [ ] after `--` handle as input
 */
 
+// for strtok_r
+#define _GNU_SOURCE
+
 #include "tei.h"
 
 #include <stdio.h>
@@ -66,8 +69,25 @@ void tei_loop(int n, tei_command *commands) {
 
         status = TEI_UNREC;
         for (int i = 0; i < n && status == TEI_UNREC; i++) {
-            if (strcmp(argv[0], commands[i].name) == 0)
-                status = commands[i].action(&pl, argc - 1, argv + 1, argc, argv);
+            if (strcmp(argv[0], commands[i].name) == 0) {
+                // check argce count
+                int argce_status = 0, argceff = argc - 1;
+                if (commands[i].argce.type == TEI_ARGC_ANY) {
+                    argce_status = 1;
+                } else if (commands[i].argce.type == TEI_ARGC_EXACT) {
+                    if (commands[i].argce.exact == argceff) argce_status = 1;
+                } else if (commands[i].argce.type == TEI_ARGC_MIN) {
+                    if (commands[i].argce.min <= argceff) argce_status = 1;
+                } else if (commands[i].argce.type == TEI_ARGC_RANGE) {
+                    if (commands[i].argce.min <= argceff &&
+                        argceff <= commands[i].argce.max)
+                        argce_status = 1;
+                }
+
+                // if we have the right `argc`, invoke the command
+                if (argce_status == 0) status = TEI_W_ARGC;
+                else status = commands[i].action(&pl, argceff, argv + 1, argc, argv);
+            }
         }
 
         // resolve non-quit statuses
@@ -89,48 +109,28 @@ void tei_loop(int n, tei_command *commands) {
     }
 }
 
-int tei_argce_check(tei_argce argce, int argc) {
-    switch (argce.type) {
-        case TEI_ARGC_ANY: return 0;
-        case TEI_ARGC_EXACT:
-            if (argce.exact == argc) return 0;
-            else break;
-        case TEI_ARGC_MIN:
-            if (argce.min <= argc) return 0;
-            else break;
-        case TEI_ARGC_RANGE:
-            if (argce.min <= argc && argc <= argce.max) return 0;
-            else break;
-    }
-
-    return 1;
-}
-
-TEI_ACTION(help, ANY, { return TEI_HELP; })
-TEI_ACTION(quit, ANY, { return TEI_QUIT; })
+TEI_ACTION(help, { return TEI_HELP; })
+TEI_ACTION(quit, { return TEI_QUIT; })
 
 // print
-TEI_ACTION(
-    print, RANGE,
-    {
-        // TODO: remove this and replace wih opening a tps.ninja url or image
-        //       `tak_print` can be replaced by a debug whole struct dump
-        if (argc == 0) tak_print(pl->position);
-        else {
-            if (strcmp(argv[0], "pretty") == 0) tak_print(pl->position);
-            else if (strcmp(argv[0], "tps") == 0) {
-                char tps[TPS_MAX_LENGTH];
-                tps_encode(tps, pl->position, TPS_STD);
-                tei_print("%s", tps);
-            } else tei_logw("option \"%s\" not recognised", argv[0]);
-        }
-    },
-    .max = 1)
+TEI_ACTION(print, {
+    // TODO: remove this and replace wih opening a tps.ninja url or image
+    //       `tak_print` can be replaced by a debug whole struct dump
+    if (argc == 0) tak_print(pl->position);
+    else {
+        if (strcmp(argv[0], "pretty") == 0) tak_print(pl->position);
+        else if (strcmp(argv[0], "tps") == 0) {
+            char tps[TPS_MAX_LENGTH];
+            tps_encode(tps, pl->position, TPS_STD);
+            tei_print("%s", tps);
+        } else tei_logw("option \"%s\" not recognised", argv[0]);
+    }
+})
 
 // print the ptn.ninja url for the fiven position
 // I could create a local image with tpsninja, but i guess it would
 // have downsides both in complexity and customization
-TEI_ACTION(ninja, ANY, {
+TEI_ACTION(ninja, {
     // i'll break the cool log stff a bit here...
     if (tei_data_stream == NULL) return TEI_OK;
 
@@ -149,64 +149,55 @@ TEI_ACTION(ninja, ANY, {
 })
 
 // new
-TEI_ACTION(
-    new, EXACT,
-    {
-        int size = atoi(argv[0]);
-        if (size < 3 || size > 8) tei_logw("size %d not supported", size);
-        else pl->position = tak_newposition(size);
-    },
-    1)
+TEI_ACTION(new, {
+    int size = atoi(argv[0]);
+    if (size < 3 || size > 8) tei_logw("size %d not supported", size);
+    else pl->position = tak_newposition(size);
+})
 
 // tps
-TEI_ACTION(
-    tps, EXACT,
-    {
-        // compose tps chunks into single string
-        char tps[TPS_MAX_LENGTH];
-        snprintf(tps, TPS_MAX_LENGTH, "%s %s %s", argv[0], argv[1], argv[2]);
+TEI_ACTION(tps, {
+    // compose tps chunks into single string
+    char tps[TPS_MAX_LENGTH];
+    snprintf(tps, TPS_MAX_LENGTH, "%s %s %s", argv[0], argv[1], argv[2]);
 
-        // load the new position
-        pl->position = tps_parse(tps, TPS_STD, &pl->zd);
-    },
-    3)
+    // load the new position
+    pl->position = tps_parse(tps, TPS_STD, &pl->zd);
+})
 
 // move
 // TODO: if i have 0 argc it just does nothing, how strict do i want to be?
-TEI_ACTION(
-    move, MIN, { pl->position = ptn_apply(pl->position, argv, argc, PTN_STD, &pl->zd); },
-    1)
+// TODO: should i check legality? or at least playability?
+TEI_ACTION(move,
+           { pl->position = ptn_apply(pl->position, argv, argc, PTN_STD, &pl->zd); })
 
 // perft
-TEI_ACTION(
-    perft, EXACT,
-    { tei_print("%lu", tak_perft(pl->position, atoi(argv[0]), &pl->slt, &pl->zd)); }, 1)
+TEI_ACTION(perft, {
+    tei_print("%lu", tak_perft(pl->position, atoi(argv[0]), &pl->slt, &pl->zd));
+})
 
 // perftd
-TEI_ACTION(
-    perftd, EXACT,
-    {
-        int depth = atoi(argv[0]);
-        tak_u64 nodes = 0;   // dunno why, but putting the two declarations in one line
-        tak_u64 nnodes = 0;  // breaks the macro (c wtf n. too much at this point lol)
-        tak_move buffer[TAK_MAX_MOVES];
-        int n = tak_search(buffer, &pl->position, &pl->slt);
-        char ptn[PTN_MAX_MOVE_LENGTH];
+TEI_ACTION(perftd, {
+    int depth = atoi(argv[0]);
+    tak_u64 nodes = 0;   // dunno why, but putting the two declarations in one line
+    tak_u64 nnodes = 0;  // breaks the macro (c wtf n. too much at this point lol)
+    tak_move buffer[TAK_MAX_MOVES];
+    int n = tak_search(buffer, &pl->position, &pl->slt);
+    char ptn[PTN_MAX_MOVE_LENGTH];
 
-        for (int i = 0; i < n; i++) {
-            nnodes = tak_perft(tak_do(pl->position, buffer[i], &pl->zd), depth - 1,
-                               &pl->slt, &pl->zd);
-            nodes += nnodes;
+    for (int i = 0; i < n; i++) {
+        nnodes = tak_perft(tak_do(pl->position, buffer[i], &pl->zd), depth - 1, &pl->slt,
+                           &pl->zd);
+        nodes += nnodes;
 
-            ptn_encode(ptn, buffer[i], pl->position.size, PTN_STD);
-            tei_print("%d. %s: %ld", i, ptn, nnodes);
-        }
+        ptn_encode(ptn, buffer[i], pl->position.size, PTN_STD);
+        tei_print("%d. %s: %ld", i, ptn, nnodes);
+    }
 
-        tei_print("%ld", nodes);
-    },
-    1)
+    tei_print("%ld", nodes);
+})
 
-TEI_ACTION(random, ANY, {
+TEI_ACTION(random, {
     int c;
     int m = TEI_RANDOM_DEFAULT_MIN;
     int M = TEI_RANDOM_DEFAULT_MAX;
@@ -259,10 +250,18 @@ int main(int argc, char **argv) {
     tei_data_stream = stdout;
     tei_log_stream = stderr;
 
-    tei_loop(10,
-             (tei_command[]){TEI_CMD(help), TEI_CMD(quit), TEI_CMD(print), TEI_CMD(ninja),
-                             TEI_CMD(new), TEI_CMD(tps), TEI_CMD(move), TEI_CMD(perft),
-                             TEI_CMD(perftd), TEI_CMD(random)});
+    tei_loop(10, (tei_command[]){
+                     TEI_CMD(help, ANY),
+                     TEI_CMD(quit, ANY),
+                     TEI_CMD(print, RANGE, .max = 1),
+                     TEI_CMD(ninja, ANY),
+                     TEI_CMD(new, EXACT, .exact = 1),
+                     TEI_CMD(tps, EXACT, .exact = 3),
+                     TEI_CMD(move, MIN, .min = 1),
+                     TEI_CMD(perft, EXACT, .exact = 1),
+                     TEI_CMD(perftd, EXACT, .exact = 1),
+                     TEI_CMD(random, ANY),
+                 });
 
     return EXIT_SUCCESS;
 }

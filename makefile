@@ -1,5 +1,5 @@
 CC=gcc
-CC_FLAGS = -Wall -Wpedantic
+CC_FLAGS = -Wall -std=c2x
 CC_FLAGS += -O3
 
 BIN = ./bin
