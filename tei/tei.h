@@ -19,6 +19,7 @@
 #define TEI_RANDOM_DEFAULT_MIN 1
 #define TEI_RANDOM_DEFAULT_MAX 100
 #define TEI_RANDOM_DEFAULT_N 1
+#define TEI_NINJA_BASE_URL "https://ptn.ninja"
 
 // helpers
 #define RANDINT(A, B) (A + rand() % (B - A + 1))

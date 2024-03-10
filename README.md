@@ -16,6 +16,7 @@
 | `help`   |                              |                                                                                                                                                                                               |
 | `quit`   |                              | quit the io loop                                                                                                                                                                              |
 | `print`  | `[tps\|pretty]`              | if `tps` print the position encoded as a [tps](https://ustak.org/tak-positional-system-tps/) string.<br>if `pretty`  or no arguments pretty-print the whole position.                         |
+| `ninja`  |                              | print the formatted [ptn.ninja](https://ptn.ninja/) url pointing to the current position                                                                                                        |
 | `new`    | `<size>`                     | set the current position as a new position of size `size`                                                                                                                                     |
 | `tps`    | `<tps>`                      | parse the given tps string and into the current position                                                                                                                                      |
 | `move`   | `[<move 1> ... <move n>]`    | apply a series of [ptn](https://ustak.org/portable-tak-notation/)-encoded moves at the current position                                                                                       |
@@ -30,7 +31,11 @@
 ```bash
 echo "random -n 10" | tei
 tei <<< "move a1 b2" <<< "print tps"
+xdg-open $(tei <<< "tps 1,1,12,x2/x5/x5/x5/2,x4 1 4" <<< "ninja")
 ```
+
+> [!NOTE]
+> `here-strings` (`<<<`) des not chain in default `bash`, a shell like `zsh` is required insthead.
 
 Everything that is not `data` is regarded as `log` and printed to a different stream (by default `stderr`), so that it can be discarded with `2>/dev/null`.
 

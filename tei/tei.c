@@ -6,6 +6,7 @@ commands
 - [x] print <style>: print the position in a way determined by <style>
     - style=tps  print the tps of the position
     - style=pretty   (DEFAULT) pretty print all the position
+- [x] ninja: print the url pointing to the current position in tps.ninja
 - [x] new <size>: load an empty position of given size
 - [x] tps <tps>: load a tps string
 - [x] move <...moves>: apply moves to the position
@@ -23,6 +24,7 @@ cli options
 
 #include "tei.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #define TAKLIB_IMPLEMENTATION
@@ -124,6 +126,27 @@ TEI_ACTION(
         }
     },
     .max = 1)
+
+// print the ptn.ninja url for the fiven position
+// I could create a local image with tpsninja, but i guess it would
+// have downsides both in complexity and customization
+TEI_ACTION(ninja, ANY, {
+    // i'll break the cool log stff a bit here...
+    if (tei_data_stream == NULL) return TEI_OK;
+
+    char tps[TPS_MAX_LENGTH];
+    int n = tps_encode(tps, pl->position, TPS_STD);
+    fprintf(tei_data_stream, "%s/[tps%%20\"", TEI_NINJA_BASE_URL);
+
+    // really crude urlencode
+    // can't do this with a lexicon, as it can't handle strings :(
+    // with a modern browser it won't really matter, but this makes it compatible with
+    // things like `xdg-open` or terminal url-clicking, making it way more flexible
+    for (int i = 0; i < n; i++)
+        if (tps[i] == ' ') fprintf(tei_data_stream, "%%20");
+        else fprintf(tei_data_stream, "%c", tps[i]);
+    tei_print("\"]");
+})
 
 // new
 TEI_ACTION(
@@ -236,17 +259,10 @@ int main(int argc, char **argv) {
     tei_data_stream = stdout;
     tei_log_stream = stderr;
 
-    tei_loop(9, (tei_command[]){
-                    TEI_CMD(help),
-                    TEI_CMD(quit),
-                    TEI_CMD(print),
-                    TEI_CMD(new),
-                    TEI_CMD(tps),
-                    TEI_CMD(move),
-                    TEI_CMD(perft),
-                    TEI_CMD(perftd),
-                    TEI_CMD(random),
-                });
+    tei_loop(10,
+             (tei_command[]){TEI_CMD(help), TEI_CMD(quit), TEI_CMD(print), TEI_CMD(ninja),
+                             TEI_CMD(new), TEI_CMD(tps), TEI_CMD(move), TEI_CMD(perft),
+                             TEI_CMD(perftd), TEI_CMD(random)});
 
     return EXIT_SUCCESS;
 }
