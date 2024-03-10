@@ -17,20 +17,8 @@ commands
     - -M <n>: max depth
     - -n <n>: amount
 
-settings
-- [ ] opening (swap/no-swap)
-
 cli options
-- [ ] verbosity level (if not given, detect automatically?)
 - [ ] after `--` handle as input
-
-                    TEI_CMD(help),
-verbosity levels
-- 0 (machine): data only
-- 1 (human): data + ui
-- 2 (debug):
-    - data
-    - command calling stack trace
 */
 
 #include "tei.h"
@@ -41,6 +29,10 @@ verbosity levels
 #include "../lib/ptn.h"
 #include "../lib/tak.h"
 #include "../lib/ui.h"
+
+// default log level
+FILE *tei_data_stream;
+FILE *tei_log_stream;
 
 void tei_loop(int n, tei_command *commands) {
     char line[TEI_LINE_BUFSIZE], *argv[TEI_MAX_ARGC], *token, *saveptr;
@@ -70,31 +62,25 @@ void tei_loop(int n, tei_command *commands) {
         // call commands
         if (argc == 0) continue;
 
-        int called = 0;
-        for (int i = 0; i < n && !called; i++) {
-            if (strcmp(argv[0], commands[i].name) == 0) {
+        status = TEI_UNREC;
+        for (int i = 0; i < n && status == TEI_UNREC; i++) {
+            if (strcmp(argv[0], commands[i].name) == 0)
                 status = commands[i].action(&pl, argc - 1, argv + 1, argc, argv);
-                called = 1;  // this is upper ugly and can be solved by a goto to a label
-                             // after the "command not recognised"... what's worst?
-            }
-        }
-
-        if (!called) {
-            // TODO: cooler prints and logs
-            printf("command \"%s\" not recognised. see `help` for a list of commands.\n",
-                   argv[0]);
         }
 
         // resolve non-quit statuses
         switch (status) {
+            // unrecognised command
+            case TEI_UNREC: tei_logw("command \"%s\" not recognised", argv[0]); break;
+
             // print command list
             case TEI_HELP:
-                printf("available commands [%d]\n", n);
-                for (int i = 0; i < n; i++) printf("- %s\n", commands[i].name);
+                tei_print("available commands [%d]", n);
+                for (int i = 0; i < n; i++) tei_print("- %s", commands[i].name);
                 break;
 
             // wrong argument count
-            case TEI_W_ARGC: printf("wrong argument count\n"); break;
+            case TEI_W_ARGC: tei_logw("wrong argument count"); break;
 
             default: break;
         }
@@ -125,15 +111,16 @@ TEI_ACTION(quit, ANY, { return TEI_QUIT; })
 TEI_ACTION(
     print, RANGE,
     {
-        // TODO: change the default based on the verbosity level
+        // TODO: remove this and replace wih opening a tps.ninja url or image
+        //       `tak_print` can be replaced by a debug whole struct dump
         if (argc == 0) tak_print(pl->position);
         else {
             if (strcmp(argv[0], "pretty") == 0) tak_print(pl->position);
             else if (strcmp(argv[0], "tps") == 0) {
                 char tps[TPS_MAX_LENGTH];
                 tps_encode(tps, pl->position, TPS_STD);
-                printf("%s\n", tps);
-            } else printf("option \"%s\" not recognised\n", argv[0]);
+                tei_print("%s", tps);
+            } else tei_logw("option \"%s\" not recognised", argv[0]);
         }
     },
     .max = 1)
@@ -143,8 +130,7 @@ TEI_ACTION(
     new, EXACT,
     {
         int size = atoi(argv[0]);
-        if (size < 3 || size > 8)
-            printf("size %d not supported: range [3, 9] required\n", size);
+        if (size < 3 || size > 8) tei_logw("size %d not supported", size);
         else pl->position = tak_newposition(size);
     },
     1)
@@ -171,11 +157,7 @@ TEI_ACTION(
 // perft
 TEI_ACTION(
     perft, EXACT,
-    {
-        int depth = atoi(argv[0]);
-        printf("%lu\n", tak_perft(pl->position, depth, &pl->slt, &pl->zd));
-    },
-    1)
+    { tei_print("%lu", tak_perft(pl->position, atoi(argv[0]), &pl->slt, &pl->zd)); }, 1)
 
 // perftd
 TEI_ACTION(
@@ -194,10 +176,10 @@ TEI_ACTION(
             nodes += nnodes;
 
             ptn_encode(ptn, buffer[i], pl->position.size, PTN_STD);
-            printf("\n%d. %s: %ld", i, ptn, nnodes);
+            tei_print("%d. %s: %ld", i, ptn, nnodes);
         }
 
-        printf("\n\nnodes searched: %ld\n", nodes);
+        tei_print("%ld", nodes);
     },
     1)
 
@@ -245,11 +227,15 @@ TEI_ACTION(random, ANY, {
         }
 
         tps_encode(tps, p, TPS_STD);
-        printf("%s\n", tps);
+        tei_print("%s", tps);
     }
 })
 
 int main(int argc, char **argv) {
+    // set out streams
+    tei_data_stream = stdout;
+    tei_log_stream = stderr;
+
     tei_loop(9, (tei_command[]){
                     TEI_CMD(help),
                     TEI_CMD(quit),

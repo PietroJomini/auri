@@ -32,6 +32,8 @@ echo "random -n 10" | tei
 tei <<< "move a1 b2" <<< "print tps"
 ```
 
+Everything that is not `data` is regarded as `log` and printed to a different stream (by default `stderr`), so that it can be discarded with `2>/dev/null`.
+
 ## taklib
 
 `taklib`, located in `/lib`, is meant as a fast (TODO: bench) header-only `c` library for handling a tak game, used as a base for the other tools implemented in `auri`. Implemented features are:

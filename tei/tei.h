@@ -30,6 +30,7 @@ typedef enum {
 
     // warnings
     TEI_HELP,    // print the commands list
+    TEI_UNREC,   // unrecognised command
     TEI_W_ARGC,  // wrong argc
 } tei_status;
 
@@ -95,3 +96,35 @@ int tei_argce_check(tei_argce argce, int argc);
 
 // main tei IO loop
 void tei_loop(int n, tei_command *commands);
+
+// streams
+extern FILE *tei_data_stream;
+extern FILE *tei_log_stream;
+
+// print data to `data` stream
+#define tei_print(...)                             \
+    ({                                             \
+        if (tei_data_stream != NULL) {             \
+            fprintf(tei_data_stream, __VA_ARGS__); \
+            fprintf(tei_data_stream, "\n");        \
+        }                                          \
+    })
+
+// print to log
+#define tei_log(LEVEL, ...)                                                       \
+    ({                                                                            \
+        if (tei_log_stream != NULL) {                                             \
+            time_t t = time(NULL);                                                \
+            struct tm tm = *localtime(&t);                                        \
+            fprintf(tei_log_stream, "%02d:%02d:%02d %s: ", tm.tm_hour, tm.tm_min, \
+                    tm.tm_sec, #LEVEL);                                           \
+            fprintf(tei_log_stream, __VA_ARGS__);                                 \
+            fprintf(tei_log_stream, "\n");                                        \
+        }                                                                         \
+    })
+
+// common log levels
+// TODO: add a way to ignore certain levels and add a bunch of info (or trace) logs
+#define tei_logi(...) tei_log(INFO, __VA_ARGS__)
+#define tei_logw(...) tei_log(WARNING, __VA_ARGS__)
+#define tei_loge(...) tei_log(ERROR, __VA_ARGS__)
