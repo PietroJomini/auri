@@ -29,6 +29,7 @@ cli options
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define TAKLIB_IMPLEMENTATION
 #include "../lib/ptn.h"
@@ -39,7 +40,7 @@ cli options
 FILE *tei_data_stream;
 FILE *tei_log_stream;
 
-void tei_loop(int n, tei_command *commands) {
+void tei_loop(int n, tei_command *commands, int na, tei_alias *aliases) {
     char line[TEI_LINE_BUFSIZE], *argv[TEI_MAX_ARGC], *token, *saveptr;
 
     tei_status status = TEI_OK;
@@ -66,6 +67,19 @@ void tei_loop(int n, tei_command *commands) {
 
         // call commands
         if (argc == 0) continue;
+
+        // try to resolve aliases first
+        // would be more efficent to try doing it after having looket through original
+        // commands, but this way i won't have to extrapolate the invoking and argce login
+        // into a function. with just a couple of aliases and commands it will be ok, but
+        // in the future i may have to fix this
+        int alias_solved = 0;
+        for (int i = 0; i < na && alias_solved == 0; i++) {
+            if (strcmp(argv[0], aliases[i].alias) == 0) {
+                argv[0] = aliases[i].target;
+                alias_solved = 1;
+            }
+        }
 
         status = TEI_UNREC;
         for (int i = 0; i < n && status == TEI_UNREC; i++) {
@@ -250,18 +264,26 @@ int main(int argc, char **argv) {
     tei_data_stream = stdout;
     tei_log_stream = stderr;
 
-    tei_loop(10, (tei_command[]){
-                     TEI_CMD(help, ANY),
-                     TEI_CMD(quit, ANY),
-                     TEI_CMD(print, RANGE, .max = 1),
-                     TEI_CMD(ninja, ANY),
-                     TEI_CMD(new, EXACT, .exact = 1),
-                     TEI_CMD(tps, EXACT, .exact = 3),
-                     TEI_CMD(move, MIN, .min = 1),
-                     TEI_CMD(perft, EXACT, .exact = 1),
-                     TEI_CMD(perftd, EXACT, .exact = 1),
-                     TEI_CMD(random, ANY),
-                 });
+    // commands
+    tei_command commands[] = {
+        TEI_CMD(help, ANY),
+        TEI_CMD(quit, ANY),
+        TEI_CMD(print, RANGE, .max = 1),
+        TEI_CMD(ninja, ANY),
+        TEI_CMD(new, EXACT, .exact = 1),
+        TEI_CMD(tps, EXACT, .exact = 3),
+        TEI_CMD(move, MIN, .min = 1),
+        TEI_CMD(perft, EXACT, .exact = 1),
+        TEI_CMD(perftd, EXACT, .exact = 1),
+        TEI_CMD(random, ANY),
+    };
 
+    // aliases
+    tei_alias aliases[] = {
+        {"p", "print"},
+        {"q", "quit"},
+    };
+
+    tei_loop(10, commands, 2, aliases);
     return EXIT_SUCCESS;
 }

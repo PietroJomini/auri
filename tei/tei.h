@@ -1,11 +1,11 @@
 #pragma once
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <getopt.h>
 
 #include "../lib/ptn.h"
 #include "../lib/tak.h"
@@ -94,8 +94,13 @@ typedef struct {
         }                                                             \
     }
 
+typedef struct {
+    char *alias;
+    char *target;
+} tei_alias;
+
 // main tei IO loop
-void tei_loop(int n, tei_command *commands);
+void tei_loop(int n, tei_command *commands, int na, tei_alias *aliases);
 
 // streams
 extern FILE *tei_data_stream;

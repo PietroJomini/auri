@@ -49,10 +49,13 @@
       - [ ] https://github.com/official-stockfish/nnue-pytorch/blob/master/docs/nnue.md
 - [ ] tei
   - [x] simple interface
-  - [ ] aliases (eg. `q` does the same as `quit`)
-  - [ ] history? navigable with arrows, saved to a file...
-  - [ ] better ui (help, errors, etc)
-    - [ ] check if invoked from terminal or from another program, and modify output based on that
+  - [x] aliases
+  - [ ] logging
+    - [ ] command call stack trace
+      - [ ] alias solving
+      - [ ] argce result
+      - [ ] starting execution
+      - [ ] execution finished
   - [ ] check standards with other mainstream engines
   - [ ] two threads? maybe i'll need it when i'll have actual engine features, like thinking
 - [ ] perft analysis against other mainstream engines
